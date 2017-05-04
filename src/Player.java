@@ -1,9 +1,9 @@
 /**
  * Created by brownl on 5/4/2017.
  */
-public class Player implements Entity{
+public class Player implements Entity {
     private Position myPos;
-    private int facing = Consts.FACING_NORTH;
+    private int facing = Constants.FACING_NORTH;
 
 
     @Override

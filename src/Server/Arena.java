@@ -4,7 +4,6 @@ package Server; /**
 import java.util.ArrayList;
 
 public class Arena {
-    ArrayList<ArrayList<Entity>> arena = new ArrayList<>();
+    ArrayList<ArrayList<Global.Entity>> arena = new ArrayList<>();
 
-    public void
 }

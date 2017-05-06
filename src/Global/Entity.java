@@ -1,16 +1,17 @@
 package Global;
 
-import Transferable.Position;
+import Server.Arena;
 
 import java.util.ArrayList;
 
 public abstract class Entity {
     public Position currentPosition;
-    public Position boundary;
+    public Arena container;
     public int facing;
     public int health;
     public boolean alive = true;
     public boolean hasVolition = false;
+    public boolean isPlayer;
 
     protected ArrayList<EntityActionListener> listeners = new ArrayList<>();
 
@@ -25,7 +26,7 @@ public abstract class Entity {
 
     public void takeDamage() {
         health--;
-        if(health < 1) alive = false; //TODO: Move to a die() method to allow for listeners
+        if(health < 1) die();
     }
 
     public int facing() {
@@ -42,10 +43,6 @@ public abstract class Entity {
 
     public void setHealth(int health) {
         this.health = health;
-    }
-
-    public void setBoundary(Position boundary) {
-        this.boundary = boundary;
     }
 
     public void addVolition(){
@@ -66,7 +63,7 @@ public abstract class Entity {
     public void move() {
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 <= boundary.y)
+                if(currentPosition.y + 1 < container.length)
                     currentPosition.y++;
                 break;
             case(Constants.FACING_SOUTH) :
@@ -74,7 +71,7 @@ public abstract class Entity {
                     currentPosition.y--;
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 <= boundary.x)
+                if(currentPosition.x + 1 < container.width)
                     currentPosition.x++;
                 break;
             case(Constants.FACING_WEST) :
@@ -82,5 +79,11 @@ public abstract class Entity {
                     currentPosition.x--;
                 break;
         }
+        for(EntityActionListener x : listeners) x.move(this, currentPosition);
+    }
+
+    protected void die(){
+        alive = false;
+        for(EntityActionListener x : listeners) x.die(this);
     }
 }

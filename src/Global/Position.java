@@ -10,4 +10,11 @@ public class Position {
         this.x = x;
         this.y = y;
     }
+
+    public boolean equals(Position check){
+        if(check.x == x && check.y == y){
+            return true;
+        }
+        return false;
+    }
 }

@@ -69,6 +69,11 @@ public class Bullet extends Entity implements KillListener, Serializable{
     }
 
     @Override
+    public void shoot() {
+        throw new IllegalStateException("A bullet cannot shoot itself! Call this from a Player instance.");
+    }
+
+    @Override
     public boolean hasMovementVolition(){
         return true; //Bullets don't wait for anyone!
     }

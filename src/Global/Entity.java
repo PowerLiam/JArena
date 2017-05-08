@@ -105,7 +105,7 @@ public abstract class Entity {
     protected Position getPositionInFrontOf(){
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 < container.map.ylength)
+                if(currentPosition.y + 1 < Constants.BOUNDARY_Y)
                     return new Position(this.currentPosition.x, this.currentPosition.y +1);
                 break;
             case(Constants.FACING_SOUTH) :
@@ -113,7 +113,7 @@ public abstract class Entity {
                     currentPosition.y--;
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < container.map.xlength)
+                if(currentPosition.x + 1 < Constants.BOUNDARY_Y)
                     currentPosition.x++;
                 break;
             case(Constants.FACING_WEST) :
@@ -143,7 +143,7 @@ public abstract class Entity {
     public void move() {
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 < container.map.ylength)
+                if(currentPosition.y + 1 < Constants.BOUNDARY_Y)
                     currentPosition.y++;
                 break;
             case(Constants.FACING_SOUTH) :
@@ -151,7 +151,7 @@ public abstract class Entity {
                     currentPosition.y--;
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < container.map.xlength)
+                if(currentPosition.x + 1 < Constants.BOUNDARY_X)
                     currentPosition.x++;
                 break;
             case(Constants.FACING_WEST) :

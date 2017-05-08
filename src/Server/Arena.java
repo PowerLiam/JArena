@@ -71,7 +71,7 @@ public class Arena implements EntityActionListener{
         }
 
         for(int i = 0; i < playersToTakeDamage.size(); i++){
-            if(playersToTakeDamage.get(i).health == 1){
+            if(playersToTakeDamage.get(i).getHealth() == 1){
                 i--;
                 playersToTakeDamage.get(i).takeDamage();
             } else {
@@ -80,7 +80,7 @@ public class Arena implements EntityActionListener{
             playersToTakeDamage.remove(playersToTakeDamage.get(i));
         }
         for(int i = 0; i < bulletsToTakeDamage.size(); i++){
-            if(bulletsToTakeDamage.get(i).health == 1){
+            if(bulletsToTakeDamage.get(i).getHealth() == 1){
                 i--;
                 bulletsToTakeDamage.get(i).takeDamage();
             } else {
@@ -141,7 +141,6 @@ public class Arena implements EntityActionListener{
     @Override
     public void die(Entity toMourn) {
         entities.remove(toMourn);
-        map.getSquare(toMourn.getPosition()).remove(toMourn);
         if(toMourn.isPlayer) players.remove(toMourn);
         //TODO: Inform clients that this entity can be removed from render
     }

@@ -1,5 +1,7 @@
 package Global;
 
+import java.io.Serializable;
+
 /**
  * Created by Jordan Blackadar as a part of the Global package in JArena.
  *
@@ -7,7 +9,7 @@ package Global;
  * @version 0.1.0
  * @since 5/5/2017 : 4:52 PM
  */
-public interface EntityActionListener {
+public interface EntityActionListener{
 
     void die(Entity toMourn);
     void move(Entity toMove, Position newPosition);

@@ -2,11 +2,12 @@ package Server;
 import Global.*;
 import Transferable.EntitySender;
 
+import java.io.Serializable;
 import java.security.InvalidParameterException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Arena implements EntityActionListener{
+public class Arena implements EntityActionListener, Serializable{
     public String title = "Java Battle Arena";
     /*
     The map has x and y coordinates for length and width of the ArrayList.
@@ -39,6 +40,8 @@ public class Arena implements EntityActionListener{
         for(Entity e : entities){
             e.fulfillVolition();
         }
+        validateEntities();
+
     }
 
     public void refreshSendables(){

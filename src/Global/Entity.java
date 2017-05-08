@@ -2,11 +2,11 @@ package Global;
 
 import Server.Arena;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public abstract class Entity {
+public abstract class Entity implements Serializable{
     public Position currentPosition;
-    protected Arena container;
     public int facing;
     private int facingVolition;
     protected int health;
@@ -16,7 +16,7 @@ public abstract class Entity {
     private boolean hasFacingVolition = false;
     public boolean isPlayer;
 
-    private ArrayList<EntityActionListener> listeners = new ArrayList<>();
+    private transient ArrayList<EntityActionListener> listeners = new ArrayList<>();
 
     public boolean hasMovementVolition() {
         return hasMovementVolition;
@@ -85,7 +85,7 @@ public abstract class Entity {
             return true;
         }
         else if(this.hasShootingVolition()){
-            Bullet bullet = new Bullet((Player)this, new Position(this.currentPosition.x + 1, this.currentPosition.y + 1),this.container, this.facing);
+            Bullet bullet = new Bullet((Player)this, new Position(this.currentPosition.x + 1, this.currentPosition.y + 1), this.facing);
             return true;
         }
         else if(this.hasFacingVolition()){
@@ -113,7 +113,7 @@ public abstract class Entity {
                     currentPosition.y--;
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < Constants.BOUNDARY_Y)
+                if(currentPosition.x + 1 < Constants.BOUNDARY_X)
                     currentPosition.x++;
                 break;
             case(Constants.FACING_WEST) :

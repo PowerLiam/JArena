@@ -2,7 +2,9 @@ package Global;
 
 import Server.Arena;
 
-public class Player extends Entity implements KillListener{
+import java.io.Serializable;
+
+public class Player extends Entity implements KillListener, Serializable{
     public int numberOfKills = 0;
 
     public Player(Position currentPosition, Arena container, int facing, int health) {

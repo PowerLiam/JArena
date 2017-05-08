@@ -2,13 +2,14 @@ package Global;
 
 import Server.Arena;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Bullet extends Entity implements KillListener{
+public class Bullet extends Entity implements KillListener, Serializable{
     private Player firedBy;
     private ArrayList<KillListener> killListeners = new ArrayList<>();
 
-    public Bullet(Player firedBy, Position currentPosition, Arena container, int facing, int health) {
+    public Bullet(Player firedBy, Position currentPosition,int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
@@ -16,31 +17,30 @@ public class Bullet extends Entity implements KillListener{
         this.currentPosition = currentPosition;
         this.facing = facing;
         this.health = health;
-        this.container = container;
         this.isPlayer = false;
     }
 
-    public Bullet(Player firedBy, Arena container) {
+    public Bullet(Player firedBy) {
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.firedBy = firedBy;
         this.currentPosition = firedBy.getPosition();
         this.health = 1;
         this.facing = Constants.FACING_NORTH;
-        this.container = container;
+
         this.isPlayer = false;
     }
 
-    public Bullet(Player firedBy, int health, Arena container) {
+    public Bullet(Player firedBy, int health) {
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.firedBy = firedBy;
         this.currentPosition = firedBy.getPosition();
         this.health = health;
         this.facing = Constants.FACING_NORTH;
-        this.container = container;
+
         this.isPlayer = false;
     }
 
-    public Bullet(Player firedBy, Position currentPosition, Arena container, int facing) {
+    public Bullet(Player firedBy, Position currentPosition, int facing) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
@@ -48,7 +48,6 @@ public class Bullet extends Entity implements KillListener{
         this.health = 1;
         this.currentPosition = currentPosition;
         this.facing = facing;
-        this.container = container;
         this.isPlayer = false;
     }
 

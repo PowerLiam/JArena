@@ -43,6 +43,7 @@ public class Player extends Entity implements KillListener, Serializable{
         this.isPlayer = true;
     }
 
+    @Override
     public void shoot(){
         int bulletPosX = -1;
         int bulletPosY = -1;

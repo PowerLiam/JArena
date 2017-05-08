@@ -9,4 +9,6 @@ public class Constants {
     static final int FACING_EAST = 3;
     static final int FACING_WEST = 4;
 
+    static final int BOUNDARY_X = 10;
+    static final int BOUNDARY_Y = 10;
 }

@@ -6,16 +6,46 @@ import java.util.ArrayList;
 
 public abstract class Entity {
     public Position currentPosition;
-    public Arena container;
+    protected Arena container;
     public int facing;
-    public int health;
+    private int facingVolition;
+    protected int health;
     public boolean alive = true;
-    public boolean hasVolition = false;
+    private boolean hasMovementVolition = false;
+    private boolean hasShootingVolition = false;
+    private boolean hasFacingVolition = false;
     public boolean isPlayer;
-    public boolean empty = false;
 
-    protected ArrayList<EntityActionListener> listeners = new ArrayList<>();
+    private ArrayList<EntityActionListener> listeners = new ArrayList<>();
 
+    public boolean hasMovementVolition() {
+        return hasMovementVolition;
+    }
+
+    public void setMovementVolition() {
+        this.hasMovementVolition = true;
+    }
+
+    public boolean hasShootingVolition() {
+        return hasShootingVolition;
+    }
+
+    public void setShootingVolition() {
+        this.hasShootingVolition = true;
+    }
+
+    public boolean hasFacingVolition() {
+        return hasFacingVolition;
+    }
+
+    public void setFacingVolition(int toFace) {
+        this.hasFacingVolition = true;
+        this.facingVolition = toFace;
+    }
+
+    public boolean isPlayer() {
+        return isPlayer;
+    }
 
     public Position getPosition() {
         return currentPosition;
@@ -46,14 +76,21 @@ public abstract class Entity {
         this.health = health;
     }
 
-    public void addVolition(){
-        this.hasVolition = true;
-    }
 
     public boolean fulfillVolition(){
-        if(hasVolition){
+        if(!alive) throw new IllegalStateException("Dead things have no volition.");
+        if(this.hasMovementVolition()){
             this.move();
-            hasVolition = false;
+            this.hasMovementVolition = false;
+            return true;
+        }
+        else if(this.hasShootingVolition()){
+            Bullet bullet = new Bullet((Player)this, new Position(this.currentPosition.x + 1, this.currentPosition.y + 1),this.container, this.facing);
+            return true;
+        }
+        else if(this.hasFacingVolition()){
+            this.facing = facingVolition;
+            this.facingVolition = -1; //This should NEVER be accessed when its value is -1
             return true;
         }
         else{
@@ -63,6 +100,27 @@ public abstract class Entity {
 
     public void setPosition(Position p){
         currentPosition = p;
+    }
+
+    protected Position getPositionInFrontOf(){
+        switch(facing){
+            case(Constants.FACING_NORTH) :
+                if(currentPosition.y + 1 < container.map.ylength)
+                    return new Position(this.currentPosition.x, this.currentPosition.y +1);
+                break;
+            case(Constants.FACING_SOUTH) :
+                if(currentPosition.y - 1 >= 0)
+                    currentPosition.y--;
+                break;
+            case(Constants.FACING_EAST) :
+                if(currentPosition.x + 1 < container.map.xlength)
+                    currentPosition.x++;
+                break;
+            case(Constants.FACING_WEST) :
+                if(currentPosition.x - 1 >= 0)
+                    currentPosition.x--;
+                break;
+        }
     }
 
     public void aboutFace(){

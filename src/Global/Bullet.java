@@ -7,8 +7,6 @@ import java.util.ArrayList;
 public class Bullet extends Entity implements KillListener{
     private Player firedBy;
     private ArrayList<KillListener> killListeners = new ArrayList<>();
-    public boolean isPlayer = false;
-    public final boolean hasVolition = true; //Can't stop, won't stop!   TODO: Does this work? The superclass attempts to modify the value of its hasVolition variable, and this will be checked in an Entity context.
 
     public Bullet(Player firedBy, Position currentPosition, Arena container, int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
@@ -19,6 +17,7 @@ public class Bullet extends Entity implements KillListener{
         this.facing = facing;
         this.health = health;
         this.container = container;
+        this.isPlayer = false;
     }
 
     public Bullet(Player firedBy, Arena container) {
@@ -28,6 +27,7 @@ public class Bullet extends Entity implements KillListener{
         this.health = 1;
         this.facing = Constants.FACING_NORTH;
         this.container = container;
+        this.isPlayer = false;
     }
 
     public Bullet(Player firedBy, int health, Arena container) {
@@ -37,6 +37,7 @@ public class Bullet extends Entity implements KillListener{
         this.health = health;
         this.facing = Constants.FACING_NORTH;
         this.container = container;
+        this.isPlayer = false;
     }
 
     public Bullet(Player firedBy, Position currentPosition, Arena container, int facing) {
@@ -48,6 +49,7 @@ public class Bullet extends Entity implements KillListener{
         this.currentPosition = currentPosition;
         this.facing = facing;
         this.container = container;
+        this.isPlayer = false;
     }
 
     public void addKillListener(KillListener listener){
@@ -65,6 +67,21 @@ public class Bullet extends Entity implements KillListener{
     public void kill() {
         //I've killed an opponent! Let's tell my player.
         for(KillListener x : killListeners)x.kill();
+    }
+
+    @Override
+    public boolean hasMovementVolition(){
+        return true; //Bullets don't wait for anyone!
+    }
+
+    @Override
+    public boolean hasShootingVolition(){
+        return false; //Avoid breaking the universe
+    }
+
+    @Override
+    public boolean hasFacingVolition(){
+        return false; //Bullets are not conscious (yet).
     }
 }
 

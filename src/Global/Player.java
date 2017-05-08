@@ -4,7 +4,6 @@ import Server.Arena;
 
 public class Player extends Entity implements KillListener{
     public int numberOfKills = 0;
-    public boolean isPlayer = true;
 
     public Player(Position currentPosition, Arena container, int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
@@ -14,6 +13,7 @@ public class Player extends Entity implements KillListener{
         this.facing = facing;
         this.health = health;
         this.container = container;
+        this.isPlayer = true;
     }
 
     public Player(Arena container) {
@@ -22,6 +22,7 @@ public class Player extends Entity implements KillListener{
         this.health = 5;
         this.facing = Constants.FACING_NORTH;
         this.container = container;
+        this.isPlayer = true;
     }
 
     public Player(int health, Arena container) {
@@ -30,6 +31,7 @@ public class Player extends Entity implements KillListener{
         this.health = health;
         this.facing = Constants.FACING_NORTH;
         this.container = container;
+        this.isPlayer = true;
     }
 
     public Player(Position currentPosition, Arena container, int facing) {
@@ -40,6 +42,7 @@ public class Player extends Entity implements KillListener{
         this.currentPosition = currentPosition;
         this.facing = facing;
         this.container = container;
+        this.isPlayer = true;
     }
 
     public void shoot(){
@@ -47,7 +50,7 @@ public class Player extends Entity implements KillListener{
         int bulletPosY = -1;
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 < container.length) {
+                if(currentPosition.y + 1 < Constants.BOUNDARY_Y) {
                     bulletPosY = currentPosition.y + 1;
                     bulletPosX = currentPosition.x;
                 }
@@ -59,7 +62,7 @@ public class Player extends Entity implements KillListener{
                 }
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < container.width) {
+                if(currentPosition.x + 1 < Constants.BOUNDARY_X) {
                     bulletPosY = currentPosition.y;
                     bulletPosX = currentPosition.x + 1;
                 }

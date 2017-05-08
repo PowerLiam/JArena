@@ -3,6 +3,7 @@ import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Server implements Runnable{
     private JList leaderBoard;
@@ -12,11 +13,15 @@ public class Server implements Runnable{
     private JTextField commandField;
     private Arena myGame = new Arena("Java Battle Arena");
 
-    private ServerSocket server;
-    private int port = 9091;
+    private ServerSocket update, volition;
+    private int updatePort = 9091;
+    private int volitionPort = 9092;
+
+    public ArrayList<ClientListener> allClients = new ArrayList<>();
 
     public Server() throws IOException {
-        server = new ServerSocket(port);
+        volition = new ServerSocket(volitionPort);
+        update = new ServerSocket(updatePort);
         this.run();
     }
 
@@ -24,10 +29,10 @@ public class Server implements Runnable{
     public void run() {
         while(true){
             try{
-                Socket client = server.accept();
-                ClientListener pending = new ClientListener(client);
-                Thread starting = new Thread(pending);
-                starting.start();
+                Socket updater = update.accept();
+                Socket volitioner = volition.accept();
+                ClientListener pending = new ClientListener(updater, volitioner);
+                allClients.add(pending);
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();

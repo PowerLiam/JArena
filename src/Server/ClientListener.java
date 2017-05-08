@@ -6,33 +6,45 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import Transferable.*;
 
-public class ClientListener implements Runnable{
-    private Socket socket;
+public class ClientListener{
+    private Socket updateSocket;
     private String name;
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
+    private ObjectInputStream updateInputStream;
+    private ObjectOutputStream updateOutputStream;
     private ClientInformation clientInformation;
     private Volition volition;
 
-    public ClientListener(Socket socket) throws IOException, ClassNotFoundException {
-        this.socket = socket;
+    private Thread vol;
+
+    public ClientListener(Socket updateSocket, Socket volitionSocket) throws IOException, ClassNotFoundException {
+        this.updateSocket = updateSocket;
         try {
-            this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-            this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
-            this.inputStream = new ObjectInputStream(socket.getInputStream());
+            this.updateOutputStream = new ObjectOutputStream(updateSocket.getOutputStream());
+            this.updateOutputStream.flush(); //Necessary to avoid 'chicken or egg' situation
+            this.updateInputStream = new ObjectInputStream(updateSocket.getInputStream());
         } catch (IOException e) {
-            System.err.println("Client " + socket.getInetAddress() + " :" + e.getMessage());
+            System.err.println("Client " + updateSocket.getInetAddress() + " :" + e.getMessage());
             e.printStackTrace();
         }
-        clientInformation = (ClientInformation) inputStream.readObject();
+
+        clientInformation = (ClientInformation) updateInputStream.readObject();
         this.name = clientInformation.getName();
-        this.run();
+
+        vol = new Thread(new VolitionListener(this, volitionSocket));
+        vol.run();
     }
 
-    @Override
-    public void run() {
-        while(true){
-            //TODO: Thread for both sending updates and receiving Volition
+    public void updateVolition(Volition v){ //Updates the SERVER'S copy of the client's sent volition.
+        this.volition = v;
+        //TODO: Add a listener to trigger action in the Arena when this happens
+    }
+
+    public void sendClientUpdate(Update u){
+        try {
+            updateOutputStream.writeObject(u);
+        } catch (IOException e) {
+            System.err.println("Client " + updateSocket.getInetAddress() + " :" + e.getMessage());
+            e.printStackTrace();
         }
     }
 }

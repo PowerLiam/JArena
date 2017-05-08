@@ -1,45 +1,28 @@
 package Client;
 
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.net.Socket;
-
-import Server.ClientListener;
 import Transferable.*;
-import Global.*;
 
 public class Client {
-    private String host = "127.0.0.1";
-    private int port = 9091;
-    private ObjectInputStream inputStream;
-    private ObjectOutputStream outputStream;
-    private Thread listener;
-    private String name;
-    private Socket socket;
     private ClientInformation me;
     private Update latest;
-    private Volition volition;
-    private boolean hasVolition;
 
     public static void main(String args[]) throws IOException {
         Client myClient = new Client();
     }
 
     public Client() throws IOException {
-        socket = new Socket(host, port);
-        outputStream = new ObjectOutputStream(socket.getOutputStream());
-        outputStream.flush();
-        inputStream = new ObjectInputStream(socket.getInputStream());
+        //TODO: Send ClientInformation on port 9091 (updatePort)
+        //TODO: Thread a ServerListener on port 9091 (updatePort)
+    }
 
-        me = new ClientInformation(name, new Position(0,0), false);
-        try{
-            outputStream.writeObject(me);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void updateVolition(Volition v){
+        //TODO: Update client's volition on the server using port 9092 (volitionPort)
+    }
 
-        volition = new Volition(Constants.FACING_NORTH);
+    private void getServerUpdate(Update u){
+        this.latest = u;
+        //TODO: Trigger a re-render here
     }
 
     public void renderBoard(){

@@ -4,7 +4,7 @@ import Server.Arena;
 
 public class Player extends Entity implements KillListener{
     public int numberOfKills = 0;
-    public boolean isPlayer= true;
+    public boolean isPlayer = true;
 
     public Player(Position currentPosition, Arena container, int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)

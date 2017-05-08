@@ -61,6 +61,10 @@ public abstract class Entity {
         }
     }
 
+    public void setPosition(Position p){
+        currentPosition = p;
+    }
+
     public void aboutFace(){
         switch(facing){
             case(Constants.FACING_NORTH) :

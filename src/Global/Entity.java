@@ -18,6 +18,8 @@ public abstract class Entity implements Serializable{
 
     private transient ArrayList<EntityActionListener> listeners = new ArrayList<>();
 
+    public abstract void shoot();
+
     public boolean hasMovementVolition() {
         return hasMovementVolition;
     }
@@ -85,7 +87,7 @@ public abstract class Entity implements Serializable{
             return true;
         }
         else if(this.hasShootingVolition()){
-            Bullet bullet = new Bullet((Player)this, new Position(this.currentPosition.x + 1, this.currentPosition.y + 1), this.facing);
+            this.shoot();
             return true;
         }
         else if(this.hasFacingVolition()){
@@ -100,27 +102,6 @@ public abstract class Entity implements Serializable{
 
     public void setPosition(Position p){
         currentPosition = p;
-    }
-
-    protected Position getPositionInFrontOf(){
-        switch(facing){
-            case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 < Constants.BOUNDARY_Y)
-                    return new Position(this.currentPosition.x, this.currentPosition.y +1);
-                break;
-            case(Constants.FACING_SOUTH) :
-                if(currentPosition.y - 1 >= 0)
-                    currentPosition.y--;
-                break;
-            case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < Constants.BOUNDARY_X)
-                    currentPosition.x++;
-                break;
-            case(Constants.FACING_WEST) :
-                if(currentPosition.x - 1 >= 0)
-                    currentPosition.x--;
-                break;
-        }
     }
 
     public void aboutFace(){

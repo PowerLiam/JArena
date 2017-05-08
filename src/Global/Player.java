@@ -7,43 +7,39 @@ import java.io.Serializable;
 public class Player extends Entity implements KillListener, Serializable{
     public int numberOfKills = 0;
 
-    public Player(Position currentPosition, Arena container, int facing, int health) {
+    public Player(Position currentPosition,int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.currentPosition = currentPosition;
         this.facing = facing;
         this.health = health;
-        this.container = container;
         this.isPlayer = true;
     }
 
-    public Player(Arena container) {
+    public Player() {
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.currentPosition = new Position(0, 0);
         this.health = 5;
         this.facing = Constants.FACING_NORTH;
-        this.container = container;
         this.isPlayer = true;
     }
 
-    public Player(int health, Arena container) {
+    public Player(int health) {
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.currentPosition = new Position(0, 0);
         this.health = health;
         this.facing = Constants.FACING_NORTH;
-        this.container = container;
         this.isPlayer = true;
     }
 
-    public Player(Position currentPosition, Arena container, int facing) {
+    public Player(Position currentPosition, int facing) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.health = 5;
         this.currentPosition = currentPosition;
         this.facing = facing;
-        this.container = container;
         this.isPlayer = true;
     }
 
@@ -77,7 +73,7 @@ public class Player extends Entity implements KillListener, Serializable{
                 break;
         }
         Position bulletPosition = new Position(bulletPosX, bulletPosY);
-        Bullet toShoot = new Bullet(this, bulletPosition, container, facing);
+        Bullet toShoot = new Bullet(this, bulletPosition, facing);
         //Now, we wait for mass destruction!
     }
 

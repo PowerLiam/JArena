@@ -1,6 +1,7 @@
 package Server;
 import Global.*;
-import Transferable.EntitySender;
+import Transferable.Update;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,7 +14,7 @@ public class Arena implements EntityActionListener, Serializable{
     protected ArrayList<Entity> entities = new ArrayList<>(); //Maintained to inform client renders
     protected ArrayList<Player> players = new ArrayList<>(); //Maintained to inform scoreboard
     protected ArrayList<Bullet> bullets = new ArrayList<>(); //Maintained to inform scoreboard
-    EntitySender sendToClients;
+    Update sendToClients;
     public int totalPlayers = 0;
     protected int livingPlayers = 0;
 
@@ -40,7 +41,7 @@ public class Arena implements EntityActionListener, Serializable{
         }
         validateEntities();
         refreshSendables();
-        //TODO serialize and send the EntitySender called sendToClients.
+        //TODO serialize and send the Update called sendToClients.
     }
 
     public void refreshSendables(){

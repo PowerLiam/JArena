@@ -5,7 +5,7 @@ import Global.Player;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class EntitySender implements Serializable{
+public class Update implements Serializable{
     public ArrayList<Entity> entities;
     public ArrayList<Player> players;
     public ArrayList<Bullet> bullets;

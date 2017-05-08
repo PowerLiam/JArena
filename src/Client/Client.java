@@ -1,12 +1,6 @@
 package Client;
 
-import Server.Arena;
-
-/**
- * Created by brownl on 5/4/2017.
- */
 public class Client implements Runnable {
-    Arena gameboard;
 
     public static void main(String args[]){
         Client myClient = new Client();
@@ -17,11 +11,11 @@ public class Client implements Runnable {
     }
 
     public void renderBoard(){
-
+        //TODO: Add Graphics Render
     }
 
     @Override
     public void run() {
-
+        //TODO: Add Server interaction
     }
 }

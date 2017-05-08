@@ -1,8 +1,5 @@
 package Global;
 
-/**
- * Created by brownl on 5/4/2017.
- */
 public class Constants {
     static final int FACING_NORTH = 1;
     static final int FACING_SOUTH = 2;

@@ -1,8 +1,5 @@
 package Global;
 
-/**
- * Created by brownl on 5/4/2017.
- */
 public class Position {
     public int x;
     public int y;

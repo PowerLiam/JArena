@@ -1,11 +1,8 @@
 package Server;
 import Global.*;
 import Transferable.EntitySender;
-
 import java.io.Serializable;
-import java.security.InvalidParameterException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Arena implements EntityActionListener, Serializable{
     public String title = "Java Battle Arena";
@@ -21,8 +18,8 @@ public class Arena implements EntityActionListener, Serializable{
     protected int livingPlayers = 0;
 
 
-    public Arena() {
-
+    public Arena(String title) {
+        this.title = title;
     }
 
     public void add(Entity entity, Position position) { //Adds something new to the map, use to initialize locations of players or to add bullets
@@ -134,6 +131,7 @@ public class Arena implements EntityActionListener, Serializable{
     public void die(Entity toMourn) {
         entities.remove(toMourn);
         if(toMourn.isPlayer) players.remove(toMourn);
+        if(!toMourn.isPlayer) bullets.remove(toMourn);
         //TODO: Inform clients that this entity can be removed from render
     }
 

@@ -1,7 +1,4 @@
 package Global;
-
-import Server.Arena;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 

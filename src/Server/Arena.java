@@ -37,11 +37,13 @@ public class Arena implements EntityActionListener, Serializable{
     }
 
     public void cycle() {
+        //TODO, give cycles a fixed time interval using system time
         for(Entity e : entities){
             e.fulfillVolition();
         }
         validateEntities();
-
+        refreshSendables();
+        //TODO serialize and send the EntitySender called sendToClients.
     }
 
     public void refreshSendables(){
@@ -57,8 +59,8 @@ public class Arena implements EntityActionListener, Serializable{
 
     public void validateEntities(){ //To be called after all entities have had their volitions
         //Evaluates all damage
-        ArrayList<Player> playersToTakeDamage = new ArrayList<Player>();
-        ArrayList<Bullet> bulletsToTakeDamage = new ArrayList<Bullet>();
+        ArrayList<Player> playersToTakeDamage = new ArrayList<>();
+        ArrayList<Bullet> bulletsToTakeDamage = new ArrayList<>();
         for(Bullet b : bullets){
             boolean gotAHit = false;
             for(Player p : players){
@@ -69,27 +71,14 @@ public class Arena implements EntityActionListener, Serializable{
             }
             if(gotAHit){
                 bulletsToTakeDamage.add(b);
-                gotAHit = false;
             }
         }
 
-        for(int i = 0; i < playersToTakeDamage.size(); i++){
-            if(playersToTakeDamage.get(i).getHealth() == 1){
-                i--;
-                playersToTakeDamage.get(i).takeDamage();
-            } else {
-                playersToTakeDamage.get(i).takeDamage();
-            }
-            playersToTakeDamage.remove(playersToTakeDamage.get(i));
+        for(Player toHurt : playersToTakeDamage){
+            toHurt.takeDamage();
         }
-        for(int i = 0; i < bulletsToTakeDamage.size(); i++){
-            if(bulletsToTakeDamage.get(i).getHealth() == 1){
-                i--;
-                bulletsToTakeDamage.get(i).takeDamage();
-            } else {
-                bulletsToTakeDamage.get(i).takeDamage();
-            }
-            bulletsToTakeDamage.remove(bulletsToTakeDamage.get(i));
+        for(Bullet toHurt: bulletsToTakeDamage){
+            toHurt.takeDamage();
         }
 
         //Damage has been evaluated, lets resolve multiple entities in one square

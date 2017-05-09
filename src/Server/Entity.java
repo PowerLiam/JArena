@@ -1,6 +1,7 @@
 package Server;
 import Global.Constants;
 import Global.Position;
+import Transferable.Volition;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -14,7 +15,9 @@ public abstract class Entity implements Serializable{
     private boolean hasMovementVolition = false;
     private boolean hasShootingVolition = false;
     private boolean hasFacingVolition = false;
+    Volition currentVolition;
     public boolean isPlayer;
+    public int id = -1;
 
     private transient ArrayList<EntityActionListener> listeners = new ArrayList<>();
 
@@ -43,6 +46,14 @@ public abstract class Entity implements Serializable{
     public void setFacingVolition(int toFace) {
         this.hasFacingVolition = true;
         this.facingVolition = toFace;
+    }
+
+    public void setVolition(Volition v){
+        currentVolition = v;
+    }
+
+    public void setId(int id){
+        this.id = id;
     }
 
     public boolean isPlayer() {
@@ -80,6 +91,8 @@ public abstract class Entity implements Serializable{
 
 
     public boolean fulfillVolition(){
+        //TODO Remove volition object
+        //TODO Check for null volition
         if(!alive) throw new IllegalStateException("Dead things have no volition.");
         if(this.hasMovementVolition()){
             this.move();

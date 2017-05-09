@@ -33,7 +33,7 @@ public class Server implements Runnable{
             try{
                 Socket updater = update.accept();
                 Socket volitioner = volition.accept();
-                ClientListener pending = new ClientListener(updater, volitioner);
+                ClientListener pending = new ClientListener(updater, volitioner, myGame);
                 allClients.add(pending);
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());

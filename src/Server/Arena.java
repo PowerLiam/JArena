@@ -13,6 +13,7 @@ public class Arena implements EntityActionListener, Serializable{
     Update sendToClients;
     public int totalPlayers = 0;
     protected int livingPlayers = 0;
+    static int id = 0;
 
 
     public Arena(String title) {
@@ -43,6 +44,12 @@ public class Arena implements EntityActionListener, Serializable{
 
     public void refreshSendables(){
         sendToClients = new Update(entities);
+    }
+
+    public int getId(){
+        id++;
+        return id;
+
     }
 
     public void validateEntities(){ //To be called after all entities have fulfilled volition

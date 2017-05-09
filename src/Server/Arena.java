@@ -7,10 +7,6 @@ import java.util.ArrayList;
 
 public class Arena implements EntityActionListener, Serializable{
     public String title = "Java Battle Arena";
-    /*
-    The map has x and y coordinates for length and width of the ArrayList.
-    The third, z dimension is for depth. This is only required for multiple entities occupying a coordinate.
-     */
     protected ArrayList<Entity> entities = new ArrayList<>(); //Maintained to inform client renders
     protected ArrayList<Player> players = new ArrayList<>(); //Maintained to inform scoreboard
     protected ArrayList<Bullet> bullets = new ArrayList<>(); //Maintained to inform scoreboard
@@ -41,21 +37,15 @@ public class Arena implements EntityActionListener, Serializable{
         }
         validateEntities();
         refreshSendables();
-        //TODO serialize and send the Update called sendToClients.
+        //TODO serialize and send the Update called sendToClients. **EntitySender is now an Update.
+        //TODO --> It only has entities since that contains Players and Bullets. Reduces Serialization and network lag.**
     }
 
     public void refreshSendables(){
-        sendToClients.entities = entities;
-        sendToClients.players = players;
-        for(Entity e : entities){
-            if(!e.isPlayer){
-                sendToClients.bullets.add((Bullet) e);
-            }
-        }
-        //Construct an Arena
+        sendToClients = new Update(entities);
     }
 
-    public void validateEntities(){ //To be called after all entities have had their volitions
+    public void validateEntities(){ //To be called after all entities have fulfilled volition
         //Evaluates all damage
         ArrayList<Player> playersToTakeDamage = new ArrayList<>();
         ArrayList<Bullet> bulletsToTakeDamage = new ArrayList<>();
@@ -79,7 +69,7 @@ public class Arena implements EntityActionListener, Serializable{
             toHurt.takeDamage();
         }
 
-        //Damage has been evaluated, lets resolve multiple entities in one square
+        //Damage has been evaluated, let's resolve multiple entities in the same position
         while(!playersAreValidated()) {
             ArrayList<Position> playerPositions = new ArrayList<>();
             for (Player p : players) {
@@ -96,8 +86,8 @@ public class Arena implements EntityActionListener, Serializable{
                         pcount++;
                     }
                 }
-                if(pcount > 1) { //This checks if there were more than one entity in that position
-                    for(Player p : inCurSquare){ //Bounce the players
+                if(pcount > 1) { //This checks if there was more than one entity in that position
+                    for(Player p : inCurSquare){  //Bounce the players
                         p.aboutFace();
                         p.move();
                         p.aboutFace();
@@ -133,11 +123,11 @@ public class Arena implements EntityActionListener, Serializable{
         entities.remove(toMourn);
         if(toMourn.isPlayer) players.remove(toMourn);
         if(!toMourn.isPlayer) bullets.remove(toMourn);
-        //TODO: Inform clients that this entity can be removed from render
+        //TODO: Update the ScoreBoard with the player's final statistics, and death
     }
 
     @Override
     public void move(Entity toMove, Position newPosition) {
-        //TODO: Inform clients that this entity has moved
+        //TODO: Determine if this listener is necessary
     }
 }

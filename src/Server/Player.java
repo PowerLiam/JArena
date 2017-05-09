@@ -1,10 +1,13 @@
-package Global;
+package Server;
+import Global.Constants;
+import Global.Position;
+
 import java.io.Serializable;
 
 public class Player extends Entity implements KillListener, Serializable{
     public int numberOfKills = 0;
 
-    public Player(Position currentPosition,int facing, int health) {
+    public Player(Position currentPosition, int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");

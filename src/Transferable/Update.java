@@ -1,13 +1,16 @@
 package Transferable;
-import Global.Bullet;
-import Global.Entity;
-import Global.Player;
+import Server.Entity;
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class Update implements Serializable{
-    public ArrayList<Entity> entities;
-    public ArrayList<Player> players;
-    public ArrayList<Bullet> bullets;
+    private ArrayList<Entity> entities;
 
+    public Update(ArrayList<Entity> entities){
+        this.entities = entities;
+    }
+
+    public ArrayList<Entity> getEntities(){
+        return entities;
+    }
 }

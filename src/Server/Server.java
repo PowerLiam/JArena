@@ -1,4 +1,6 @@
 package Server;
+import Global.Constants;
+
 import javax.swing.*;
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -14,8 +16,8 @@ public class Server implements Runnable{
     private Arena myGame = new Arena("Java Battle Arena");
 
     private ServerSocket update, volition;
-    private int updatePort = 9091;
-    private int volitionPort = 9092;
+    private int updatePort = Constants.UPDATE_PORT;
+    private int volitionPort = Constants.VOLITION_PORT;
 
     public ArrayList<ClientListener> allClients = new ArrayList<>();
 

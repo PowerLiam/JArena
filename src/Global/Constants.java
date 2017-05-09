@@ -8,4 +8,7 @@ public class Constants {
 
     public static final int BOUNDARY_X = 10;
     public static final int BOUNDARY_Y = 10;
+
+    public static final int UPDATE_PORT = 9091;
+    public static final int VOLITION_PORT = 9092;
 }

@@ -18,14 +18,9 @@ public class ClientListener{
 
     public ClientListener(Socket updateSocket, Socket volitionSocket) throws IOException, ClassNotFoundException {
         this.updateSocket = updateSocket;
-        try {
-            this.updateOutputStream = new ObjectOutputStream(updateSocket.getOutputStream());
-            this.updateOutputStream.flush(); //Necessary to avoid 'chicken or egg' situation
-            this.updateInputStream = new ObjectInputStream(updateSocket.getInputStream());
-        } catch (IOException e) {
-            System.err.println("Client " + updateSocket.getInetAddress() + " :" + e.getMessage());
-            e.printStackTrace();
-        }
+        this.updateOutputStream = new ObjectOutputStream(updateSocket.getOutputStream());
+        this.updateOutputStream.flush(); //Necessary to avoid 'chicken or egg' situation
+        this.updateInputStream = new ObjectInputStream(updateSocket.getInputStream());
 
         clientInformation = (ClientInformation) updateInputStream.readObject();
         this.name = clientInformation.getName();
@@ -36,7 +31,7 @@ public class ClientListener{
 
     public void updateVolition(Volition v){ //Updates the SERVER'S copy of the client's sent volition.
         this.volition = v;
-        //TODO: Add a listener to trigger action in the Arena when this happens
+        //TODO: Add an event listener to trigger action in the Arena when this happens
     }
 
     public void sendClientUpdate(Update u){

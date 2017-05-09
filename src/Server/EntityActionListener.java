@@ -1,4 +1,6 @@
-package Global;
+package Server;
+
+import Global.Position;
 
 public interface EntityActionListener{
 

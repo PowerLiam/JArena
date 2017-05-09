@@ -1,4 +1,7 @@
-package Global;
+package Server;
+import Global.Constants;
+import Global.Position;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -6,7 +9,7 @@ public class Bullet extends Entity implements KillListener, Serializable{
     private Player firedBy;
     private ArrayList<KillListener> killListeners = new ArrayList<>();
 
-    public Bullet(Player firedBy, Position currentPosition,int facing, int health) {
+    public Bullet(Player firedBy, Position currentPosition, int facing, int health) {
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");

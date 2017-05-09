@@ -1,5 +1,6 @@
 package Server;
 import Global.Constants;
+import Transferable.Update;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class Server implements Runnable{
     private JProgressBar gameProgress;
     private JButton startStopButton;
     private JTextField commandField;
-    private Arena myGame = new Arena("Java Battle Arena");
+    private Arena myGame;
 
     private ServerSocket update, volition;
     private int updatePort = Constants.UPDATE_PORT;
@@ -24,6 +25,7 @@ public class Server implements Runnable{
     public Server() throws IOException {
         volition = new ServerSocket(volitionPort);
         update = new ServerSocket(updatePort);
+        myGame = new Arena("Java Battle Arena", this);
         this.run();
     }
 
@@ -41,4 +43,11 @@ public class Server implements Runnable{
             }
         }
     }
+
+    public void updateAllClientListeners(Update u){
+        for(ClientListener listener : allClients){
+            listener.sendClientUpdate(u);
+        }
+    }
+
 }

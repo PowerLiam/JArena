@@ -13,10 +13,12 @@ public class Arena implements EntityActionListener, Serializable{
     Update sendToClients;
     public int totalPlayers = 0;
     protected int livingPlayers = 0;
+    Server running;
     static int id = 0;
 
 
-    public Arena(String title) {
+    public Arena(String title, Server running) {
+        this.running = running;
         this.title = title;
     }
 

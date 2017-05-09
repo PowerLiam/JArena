@@ -15,7 +15,7 @@ public class ClientListener{
     private ObjectInputStream updateInputStream;
     private ObjectOutputStream updateOutputStream;
     private ClientInformation clientInformation;
-    private Entity myPlayer;
+    private Player myPlayer;
     private Thread vol;
     private Arena ParentArena;
 
@@ -43,6 +43,7 @@ public class ClientListener{
 
     public void sendClientUpdate(Update u){
         try {
+            u.addPlayer(this.getMyPlayer());
             updateOutputStream.writeObject(u);
         } catch (IOException e) {
             System.err.println("Client " + updateSocket.getInetAddress() + " :" + e.getMessage());
@@ -50,7 +51,7 @@ public class ClientListener{
         }
     }
 
-    public Entity getMyPlayer(){
+    public Player getMyPlayer(){
         return myPlayer;
     }
 }

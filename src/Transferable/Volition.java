@@ -1,4 +1,4 @@
-package Transferable;
+package transferable;
 
 public class Volition {
     private boolean hasMovementVolition;

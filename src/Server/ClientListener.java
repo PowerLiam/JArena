@@ -1,12 +1,12 @@
-package Server;
+package server;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import Global.Position;
-import Transferable.*;
+import global.Position;
+import transferable.*;
 
 public class ClientListener{
     private Socket updateSocket;
@@ -45,7 +45,7 @@ public class ClientListener{
             u.addPlayer(this.getMyPlayer());
             updateOutputStream.writeObject(u);
         } catch (IOException e) {
-            System.err.println("Client " + updateSocket.getInetAddress() + " :" + e.getMessage());
+            System.err.println("client " + updateSocket.getInetAddress() + " :" + e.getMessage());
             e.printStackTrace();
         }
     }

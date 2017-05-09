@@ -1,13 +1,13 @@
-package Client;
+package client;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import Global.Constants;
-import Global.Position;
-import Transferable.*;
+import global.Constants;
+import global.Position;
+import transferable.*;
 
 public class Client {
     private String host = "127.0.0.1";
@@ -36,14 +36,14 @@ public class Client {
     }
 
     private void updateVolition(Volition v) throws IOException {
-        //Use to update Server of a new Volition
+        //Use to update server of a new Volition
         outputStream.writeObject(v);
     }
 
     public void getServerUpdate(Update u){
         //Called by ServerListener, not intended for other use.
         this.latest = u;
-        //TODO: Trigger a re-render here, since the Server resent its entities
+        //TODO: Trigger a re-render here, since the server resent its entities
     }
 
     public void renderBoard(){

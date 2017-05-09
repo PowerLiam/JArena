@@ -1,7 +1,7 @@
-package Server;
+package server;
 
-import Transferable.ClientInformation;
-import Transferable.Volition;
+import transferable.ClientInformation;
+import transferable.Volition;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -23,7 +23,7 @@ public class VolitionListener implements Runnable{
             this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
             this.inputStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
-            System.err.println("Client " + socket.getInetAddress() + " :" + e.getMessage());
+            System.err.println("client " + socket.getInetAddress() + " :" + e.getMessage());
             e.printStackTrace();
         }
     }

@@ -1,5 +1,5 @@
-package Transferable;
-import Global.*;
+package transferable;
+import global.*;
 
 public class ClientInformation {
     private String name;

@@ -1,6 +1,6 @@
-package Server;
-import Global.Constants;
-import Transferable.Update;
+package server;
+import global.Constants;
+import transferable.Update;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -15,7 +15,6 @@ public class Server implements Runnable{
     private JButton startStopButton;
     private JTextField commandField;
     private Arena myGame;
-
     private ServerSocket update, volition;
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;

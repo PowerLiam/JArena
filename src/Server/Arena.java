@@ -1,6 +1,6 @@
-package Server;
-import Global.*;
-import Transferable.Update;
+package server;
+import global.*;
+import transferable.Update;
 
 import java.io.Serializable;
 import java.util.ArrayList;

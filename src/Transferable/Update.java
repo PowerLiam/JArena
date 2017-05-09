@@ -1,6 +1,6 @@
-package Transferable;
-import Server.Entity;
-import Server.Player;
+package transferable;
+import server.Entity;
+import server.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;

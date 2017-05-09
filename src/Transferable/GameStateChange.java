@@ -1,4 +1,4 @@
-package Transferable;
+package transferable;
 
 public class GameStateChange {
     public boolean isStarted;

@@ -1,6 +1,6 @@
-package Client;
-import Transferable.ClientInformation;
-import Transferable.Update;
+package client;
+import transferable.ClientInformation;
+import transferable.Update;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;

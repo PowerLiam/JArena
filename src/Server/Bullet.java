@@ -1,6 +1,6 @@
-package Server;
-import Global.Constants;
-import Global.Position;
+package server;
+import global.Constants;
+import global.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -1,7 +1,7 @@
-package Server;
-import Global.Constants;
-import Global.Position;
-import Transferable.Volition;
+package server;
+import global.Constants;
+import global.Position;
+import transferable.Volition;
 
 import java.io.Serializable;
 import java.util.ArrayList;

@@ -15,7 +15,6 @@ public abstract class Entity implements Serializable{
     private boolean hasMovementVolition = false;
     private boolean hasShootingVolition = false;
     private boolean hasFacingVolition = false;
-    Volition currentVolition;
     public boolean isPlayer;
     public int id = -1;
 
@@ -49,7 +48,10 @@ public abstract class Entity implements Serializable{
     }
 
     public void setVolition(Volition v){
-        currentVolition = v;
+        this.hasFacingVolition = v.isHasFacingVolition();
+        this.hasMovementVolition = v.isHasMovementVolition();
+        this.hasShootingVolition = v.isHasShootingVolition();
+        this.facingVolition = v.getFacingVolition();
     }
 
     public void setId(int id){

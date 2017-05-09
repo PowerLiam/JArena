@@ -40,8 +40,7 @@ public class Arena implements EntityActionListener, Serializable{
         }
         validateEntities();
         refreshSendables();
-        //TODO serialize and send the Update called sendToClients. **EntitySender is now an Update.
-        //TODO --> It only has entities since that contains Players and Bullets. Reduces Serialization and network lag.**
+        running.updateAllClientListeners(sendToClients);
     }
 
     public void refreshSendables(){

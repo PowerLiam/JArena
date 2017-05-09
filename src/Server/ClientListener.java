@@ -38,7 +38,6 @@ public class ClientListener{
 
     public void updateVolition(Volition v){ //Updates the SERVER'S copy of the client's sent volition.
         myPlayer.setVolition(v);
-        //TODO: Add an event listener to trigger action in the Arena when this happens
     }
 
     public void sendClientUpdate(Update u){

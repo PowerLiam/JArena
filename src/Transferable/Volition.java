@@ -20,27 +20,27 @@ public class Volition {
         this.facingVolition = -1;
     }
 
-    public boolean isHasMovementVolition() {
+    public boolean isMovementVolition() {
         return hasMovementVolition;
     }
 
-    public void setHasMovementVolition(boolean hasMovementVolition) {
+    public void setMovementVolition(boolean hasMovementVolition) {
         this.hasMovementVolition = hasMovementVolition;
     }
 
-    public boolean isHasFacingVolition() {
+    public boolean isFacingVolition() {
         return hasFacingVolition;
     }
 
-    public void setHasFacingVolition(boolean hasFacingVolition) {
+    public void setFacingVolition(boolean hasFacingVolition) {
         this.hasFacingVolition = hasFacingVolition;
     }
 
-    public boolean isHasShootingVolition() {
+    public boolean isShootingVolition() {
         return hasShootingVolition;
     }
 
-    public void setHasShootingVolition(boolean hasShootingVolition) {
+    public void setShootingVolition(boolean hasShootingVolition) {
         this.hasShootingVolition = hasShootingVolition;
     }
 

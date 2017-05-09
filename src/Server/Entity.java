@@ -48,9 +48,9 @@ public abstract class Entity implements Serializable{
     }
 
     public void setVolition(Volition v){
-        this.hasFacingVolition = v.isHasFacingVolition();
-        this.hasMovementVolition = v.isHasMovementVolition();
-        this.hasShootingVolition = v.isHasShootingVolition();
+        this.hasFacingVolition = v.isFacingVolition();
+        this.hasMovementVolition = v.isMovementVolition();
+        this.hasShootingVolition = v.isShootingVolition();
         this.facingVolition = v.getFacingVolition();
     }
 
@@ -93,8 +93,6 @@ public abstract class Entity implements Serializable{
 
 
     public boolean fulfillVolition(){
-        //TODO Remove volition object
-        //TODO Check for null volition
         if(!alive) throw new IllegalStateException("Dead things have no volition.");
         if(this.hasMovementVolition()){
             this.move();
@@ -107,7 +105,7 @@ public abstract class Entity implements Serializable{
         }
         else if(this.hasFacingVolition()){
             this.facing = facingVolition;
-            this.facingVolition = -1; //This should NEVER be accessed when its value is -1
+            this.facingVolition = -1; //This should NEVER be accessed when its value is -1, a check for hasFacingVolition() should precede getter of this value
             return true;
         }
         else{

@@ -22,6 +22,11 @@ public class Server implements Runnable{
 
     public ArrayList<ClientListener> allClients = new ArrayList<>();
 
+    public static void main(String[] args) throws IOException {
+        Server run = new Server();
+        run.run();
+    }
+
     public Server() throws IOException {
         volition = new ServerSocket(volitionPort);
         update = new ServerSocket(updatePort);

@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class ServerListener implements Runnable {
     private Socket socket;
@@ -14,18 +15,13 @@ public class ServerListener implements Runnable {
     private Client runner;
 
     public ServerListener(Client runner, Socket socket, ClientInformation info) throws IOException {
-        System.out.println("beg const");
         this.runner = runner;
         this.info = info;
         this.socket = socket;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-        System.out.println("bef flush");
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
-        System.out.println("after flush");
         this.inputStream = new ObjectInputStream(socket.getInputStream());
-        System.out.println("Before write obj");
         outputStream.writeObject(info);
-        System.out.println("AFter WRite obj");
     }
 
     @Override
@@ -34,7 +30,17 @@ public class ServerListener implements Runnable {
             try {
                 Update toNotify = (Update) inputStream.readObject();
                 runner.getServerUpdate(toNotify);
-            } catch (IOException | ClassNotFoundException e) {
+            } catch(SocketException e){
+                System.err.println("Lost connection to server.");
+                try {
+                    socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                break;
+            }
+
+            catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

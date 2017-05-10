@@ -1,7 +1,9 @@
 package transferable;
 import global.*;
 
-public class ClientInformation {
+import java.io.Serializable;
+
+public class ClientInformation implements Serializable{
     private String name;
     private Position startingPosition;
     private boolean isSpectator;

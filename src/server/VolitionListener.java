@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.SocketException;
 
 public class VolitionListener implements Runnable{
     private Socket socket;
@@ -14,9 +15,11 @@ public class VolitionListener implements Runnable{
     private ObjectOutputStream outputStream;
     private ClientInformation clientInformation;
     private ClientListener runner;
+    private boolean run;
 
-    public VolitionListener(ClientListener runner,Socket socket){
+    public VolitionListener(ClientListener runner,Socket socket, ClientInformation clientInformation){
         this.runner = runner;
+        this.clientInformation = clientInformation;
         try {
             this.socket = socket;
             this.outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -26,17 +29,28 @@ public class VolitionListener implements Runnable{
             System.err.println("client " + socket.getInetAddress() + " :" + e.getMessage());
             e.printStackTrace();
         }
+        run = true;
     }
 
     @Override
     public void run() {
-        while(true){
+        while(run){
             try {
                 Volition toNotify = (Volition) inputStream.readObject();
                 runner.updateVolition(toNotify);
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (SocketException e){
+                System.err.println("Lost connection to " + clientInformation.getName());
+                try {
+                    socket.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+                run = false;
+            }
+            catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
+
         }
     }
 }

@@ -6,6 +6,7 @@ import transferable.Update;
 import javax.swing.*;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -41,13 +42,14 @@ public class Server implements Runnable{
         while(isQueueing){
             try{
                 Socket updater = update.accept();
-                ClientInformation pendingInfo = (ClientInformation) new ObjectInputStream(updater.getInputStream()).readObject();
-                System.out.println("Pending: updat");
+                ObjectInputStream pendingInputStream = new ObjectInputStream(updater.getInputStream());
+                ObjectOutputStream pendingOutputStream = new ObjectOutputStream(updater.getOutputStream());
+                pendingOutputStream.flush();
+                ClientInformation pendingInfo = (ClientInformation) pendingInputStream.readObject();
                 Socket volitioner = volition.accept();
-                System.out.println("Pending:  vol");
-                ClientListener pending = new ClientListener(updater, volitioner, myGame, pendingInfo);
+                ClientListener pending = new ClientListener(pendingInputStream, pendingOutputStream, volitioner, myGame, pendingInfo);
                 allClients.add(pending);
-                System.out.println("Pending: added");
+                System.out.println("Added Player: " + pendingInfo.getName() + " ID " + pending.getMyPlayer().id);
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();

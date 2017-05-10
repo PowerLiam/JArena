@@ -9,7 +9,8 @@ import global.Position;
 import transferable.*;
 
 public class ClientListener{
-    private Socket updateSocket;
+    private ObjectOutputStream updateOutput;
+    private ObjectInputStream updateInput;
 
     private String name;
     private ObjectInputStream updateInputStream;
@@ -19,20 +20,19 @@ public class ClientListener{
     private Thread vol;
     private Arena ParentArena;
 
-    public ClientListener(Socket updateSocket, Socket volitionSocket, Arena Parent, ClientInformation myInfo) throws IOException, ClassNotFoundException {
-        this.updateSocket = updateSocket;
-        this.updateOutputStream = new ObjectOutputStream(updateSocket.getOutputStream());
-        this.updateOutputStream.flush(); //Necessary to avoid 'chicken or egg' situation
-        this.updateInputStream = new ObjectInputStream(updateSocket.getInputStream());
+    public ClientListener(ObjectInputStream updateInput, ObjectOutputStream updateOutput, Socket volitionSocket, Arena Parent, ClientInformation myInfo) throws IOException, ClassNotFoundException {
+
+        this.updateOutputStream = updateOutput;
+        this.updateInputStream = updateInput;
         clientInformation = myInfo;
         name = myInfo.getName();
 
         ParentArena = Parent;
-        myPlayer = new Player();
+        myPlayer = new Player(clientInformation);
         myPlayer.setId(ParentArena.getId());
         ParentArena.add(myPlayer, new Position(0,0));
 
-        vol = new Thread(new VolitionListener(this, volitionSocket));
+        vol = new Thread(new VolitionListener(this, volitionSocket, clientInformation));
         vol.start();
     }
 
@@ -45,7 +45,6 @@ public class ClientListener{
             u.addPlayer(this.getMyPlayer());
             updateOutputStream.writeObject(u);
         } catch (IOException e) {
-            System.err.println("client " + updateSocket.getInetAddress() + " :" + e.getMessage());
             e.printStackTrace();
         }
     }

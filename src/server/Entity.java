@@ -94,18 +94,24 @@ public abstract class Entity implements Serializable{
 
     public boolean fulfillVolition(){
         if(!alive) throw new IllegalStateException("Dead things have no volition.");
-        if(this.hasMovementVolition()){
+        //Volition Priority: Face, Move, Shoot. If ever set to multiple, accept in order of priority. (This should never happen)
+        if(this.hasFacingVolition()){
+            this.facing = facingVolition;
+            //Reset back to default
+            this.facingVolition = -1; //This should NEVER be accessed when its value is -1, a check for hasFacingVolition() should precede getter of this value
+            this.hasFacingVolition = false;
+            return true;
+        }
+        else if(this.hasMovementVolition()){
             this.move();
+            //Reset back to default
             this.hasMovementVolition = false;
             return true;
         }
         else if(this.hasShootingVolition()){
             this.shoot();
-            return true;
-        }
-        else if(this.hasFacingVolition()){
-            this.facing = facingVolition;
-            this.facingVolition = -1; //This should NEVER be accessed when its value is -1, a check for hasFacingVolition() should precede getter of this value
+            //Reset back to default
+            this.hasShootingVolition = false;
             return true;
         }
         else{

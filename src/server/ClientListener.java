@@ -19,13 +19,13 @@ public class ClientListener{
     private Thread vol;
     private Arena ParentArena;
 
-    public ClientListener(Socket updateSocket, Socket volitionSocket, Arena Parent) throws IOException, ClassNotFoundException {
+    public ClientListener(Socket updateSocket, Socket volitionSocket, Arena Parent, ClientInformation myInfo) throws IOException, ClassNotFoundException {
         this.updateSocket = updateSocket;
         this.updateOutputStream = new ObjectOutputStream(updateSocket.getOutputStream());
         this.updateOutputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.updateInputStream = new ObjectInputStream(updateSocket.getInputStream());
-        clientInformation = (ClientInformation) updateInputStream.readObject();
-        this.name = clientInformation.getName();
+        clientInformation = myInfo;
+        name = myInfo.getName();
 
         ParentArena = Parent;
         myPlayer = new Player();
@@ -33,7 +33,7 @@ public class ClientListener{
         ParentArena.add(myPlayer, new Position(0,0));
 
         vol = new Thread(new VolitionListener(this, volitionSocket));
-        vol.run();
+        vol.start();
     }
 
     public void updateVolition(Volition v){ //Updates the SERVER'S copy of the client's sent volition.

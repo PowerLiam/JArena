@@ -1,9 +1,11 @@
 package server;
 import global.Constants;
+import transferable.ClientInformation;
 import transferable.Update;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -24,7 +26,7 @@ public class Server implements Runnable{
 
     public static void main(String[] args) throws IOException {
         Server run = new Server();
-        run.run();
+        run.run(); //Not a thread
     }
 
     public Server() throws IOException {
@@ -32,17 +34,21 @@ public class Server implements Runnable{
         update = new ServerSocket(updatePort);
         myGame = new Arena("Java Battle Arena", this);
         isQueueing = true;
-        this.run();
     }
 
     @Override
     public void run() {
+
         while(isQueueing){
             try{
                 Socket updater = update.accept();
+                ClientInformation pendingInfo = (ClientInformation) new ObjectInputStream(updater.getInputStream()).readObject();
+                System.out.println("Pending: updat");
                 Socket volitioner = volition.accept();
-                ClientListener pending = new ClientListener(updater, volitioner, myGame);
+                System.out.println("Pending:  vol");
+                ClientListener pending = new ClientListener(updater, volitioner, myGame, pendingInfo);
                 allClients.add(pending);
+                System.out.println("Pending: added");
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();

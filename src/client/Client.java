@@ -27,11 +27,15 @@ public class Client {
     }
 
     public Client() throws IOException {
+        System.out.println("CHUNK30");
         me = new ClientInformation("Test Client", new Position(0,0), false);
+        System.out.println("CHUNK32");
         upd = new Thread(new ServerListener(this, new Socket(host, updatePort), me));
+        System.out.println("CHUNK34");
         upd.start();
-
+        System.out.println("CHUNK36");
         this.volitionSocket = new Socket(host, volitionPort);
+        System.out.println("CHUNK38");
         this.outputStream = new ObjectOutputStream(volitionSocket.getOutputStream());
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());

@@ -14,13 +14,18 @@ public class ServerListener implements Runnable {
     private Client runner;
 
     public ServerListener(Client runner, Socket socket, ClientInformation info) throws IOException {
+        System.out.println("beg const");
         this.runner = runner;
         this.info = info;
         this.socket = socket;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
+        System.out.println("bef flush");
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
+        System.out.println("after flush");
         this.inputStream = new ObjectInputStream(socket.getInputStream());
+        System.out.println("Before write obj");
         outputStream.writeObject(info);
+        System.out.println("AFter WRite obj");
     }
 
     @Override

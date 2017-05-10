@@ -3,9 +3,10 @@ import global.*;
 import transferable.Update;
 
 import java.io.Serializable;
+import java.time.Clock;
 import java.util.ArrayList;
 
-public class Arena implements EntityActionListener, Serializable{
+public class Arena implements EntityActionListener, Serializable, Runnable{
     public String title = "Java Battle Arena";
     protected ArrayList<Entity> entities = new ArrayList<>(); //Maintained to inform client renders
     protected ArrayList<Player> players = new ArrayList<>(); //Maintained to inform scoreboard
@@ -33,13 +34,27 @@ public class Arena implements EntityActionListener, Serializable{
         }
     }
 
+    public void run(){
+        cycle();
+    }
+
     public void cycle() {
-        //TODO, give cycles a fixed time interval using system time
+        double sysNanoTimeStart = System.currentTimeMillis();
         for(Entity e : entities){
             e.fulfillVolition();
         }
         validateEntities();
         refreshSendables();
+        double sysNanoTimeEnd = System.currentTimeMillis();
+        if(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 500){
+            try {
+                Thread.sleep( 500 - (int)(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
+            } catch (InterruptedException e) {
+                System.err.println("done waiting");
+            }
+        }
+        //TODO serialize and send the Update called sendToClients. **EntitySender is now an Update.
+        //TODO --> It only has entities since that contains Players and Bullets. Reduces Serialization and network lag.**
         running.updateAllClientListeners(sendToClients);
     }
 

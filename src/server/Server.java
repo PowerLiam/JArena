@@ -43,9 +43,12 @@ public class Server implements Runnable{
                 e.printStackTrace();
             }
         }
-        //TODO: Cycle Arena
-        //TODO: Update the ScoreBoard with Players' kill counts
-        //TODO: Check for players.size() == 1 to end the game
+        while(myGame.players.size() > 1){
+            myGame.cycle();
+            //TODO: Update the ScoreBoard with Players' kill counts
+        }
+
+        //TODO: Mark Winner on Scoreboard
     }
 
     public void updateAllClientListeners(Update u){

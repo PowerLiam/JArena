@@ -148,9 +148,4 @@ public class Arena implements EntityActionListener, Serializable{
         if(!toMourn.isPlayer) bullets.remove(toMourn);
         //TODO: Update the ScoreBoard with the player's final statistics, and death
     }
-
-    @Override
-    public void move(Entity toMove, Position newPosition) {
-        //TODO: Determine if this listener is necessary
-    }
 }

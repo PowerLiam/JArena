@@ -153,7 +153,6 @@ public abstract class Entity implements Serializable{
                     currentPosition.x--;
                 break;
         }
-        for(EntityActionListener x : listeners) x.move(this, currentPosition);
     }
 
     protected void die(){

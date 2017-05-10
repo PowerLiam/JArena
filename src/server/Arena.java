@@ -3,10 +3,9 @@ import global.*;
 import transferable.Update;
 
 import java.io.Serializable;
-import java.time.Clock;
 import java.util.ArrayList;
 
-public class Arena implements EntityActionListener, Serializable, Runnable{
+public class Arena implements EntityActionListener, Serializable{
     public String title = "Java Battle Arena";
     protected ArrayList<Entity> entities = new ArrayList<>(); //Maintained to inform client renders
     protected ArrayList<Player> players = new ArrayList<>(); //Maintained to inform scoreboard
@@ -34,9 +33,6 @@ public class Arena implements EntityActionListener, Serializable, Runnable{
         }
     }
 
-    public void run(){
-        cycle();
-    }
 
     public void cycle() {
         double sysNanoTimeStart = System.currentTimeMillis();
@@ -53,8 +49,6 @@ public class Arena implements EntityActionListener, Serializable, Runnable{
                 System.err.println("done waiting");
             }
         }
-        //TODO serialize and send the Update called sendToClients. **EntitySender is now an Update.
-        //TODO --> It only has entities since that contains Players and Bullets. Reduces Serialization and network lag.**
         running.updateAllClientListeners(sendToClients);
     }
 
@@ -72,16 +66,22 @@ public class Arena implements EntityActionListener, Serializable, Runnable{
         //Evaluates all damage
         ArrayList<Player> playersToTakeDamage = new ArrayList<>();
         ArrayList<Bullet> bulletsToTakeDamage = new ArrayList<>();
+        ArrayList<Player> killTracking;
         for(Bullet b : bullets){
+            killTracking = new ArrayList<>();
             boolean gotAHit = false;
             for(Player p : players){
                 if(b.getPosition().equals(p.getPosition())){
                     gotAHit = true;
                     playersToTakeDamage.add(p);
+                    killTracking.add(p);
                 }
             }
             if(gotAHit){
                 bulletsToTakeDamage.add(b);
+                for(Player p : killTracking){
+                    if(p.getHealth() == 1) b.kill();
+                }
             }
         }
 

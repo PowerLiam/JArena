@@ -14,7 +14,7 @@ import global.Position;
 import transferable.*;
 
 public class Client implements ActionListener, KeyListener {
-    private String host = "127.0.0.1";
+    private String host = "127.0.0.1"; //TODO: Prompt for Host
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
     private Socket volitionSocket;
@@ -33,9 +33,7 @@ public class Client implements ActionListener, KeyListener {
 
     public Client() throws IOException {
         currentVolition = new Volition(false,false);
-
-        System.out.println("CHUNK30");
-        me = new ClientInformation("Test Client", new Position(0,0), false);
+        me = new ClientInformation("Test Client", new Position(0,0), false); //TODO: Prompt for Name
         upd = new Thread(new ServerListener(this, new Socket(host, updatePort), me));
         upd.start();
         this.volitionSocket = new Socket(host, volitionPort);

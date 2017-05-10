@@ -48,6 +48,7 @@ public class Server implements Runnable{
                 ClientInformation pendingInfo = (ClientInformation) pendingInputStream.readObject();
                 Socket volitioner = volition.accept();
                 ClientListener pending = new ClientListener(pendingInputStream, pendingOutputStream, volitioner, myGame, pendingInfo);
+                assignStartingPosition(pending.getMyPlayer());
                 allClients.add(pending);
                 System.out.println("Added Player: " + pendingInfo.getName() + " ID " + pending.getMyPlayer().id);
             } catch (IOException | ClassNotFoundException e) {
@@ -68,6 +69,10 @@ public class Server implements Runnable{
         for(ClientListener listener : allClients){
             listener.sendClientUpdate(u);
         }
+    }
+
+    private void assignStartingPosition(Player next){
+        //TODO: Modify the Player's starting Position based on allClients.size() and Global.BOUNDARY_X and Global.BOUNDARY_Y
     }
 
 }

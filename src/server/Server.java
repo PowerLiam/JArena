@@ -38,7 +38,6 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
-
         while(isQueueing){
             try{
                 Socket updater = update.accept();
@@ -55,10 +54,11 @@ public class Server implements Runnable{
             }
         }
         while(myGame.players.size() > 1){
-            myGame.cycle();
+            boolean gameEnded = myGame.cycle();
             //TODO: Update the ScoreBoard with Players' kill counts
+            if(gameEnded) break;
         }
-
+        System.out.print("WINNER: " + myGame.players.get(0).myInfo.getName());
         //TODO: Mark Winner on Scoreboard
     }
 

@@ -1,13 +1,16 @@
 package server;
 import global.Constants;
 import global.Position;
+import transferable.ClientInformation;
 
 import java.io.Serializable;
 
 public class Player extends Entity implements KillListener, Serializable{
     public int numberOfKills = 0;
+    ClientInformation myInfo;
 
-    public Player(Position currentPosition, int facing, int health) {
+    public Player(Position currentPosition, int facing, int health, ClientInformation myInfo) {
+        this.myInfo = myInfo;
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
@@ -17,7 +20,8 @@ public class Player extends Entity implements KillListener, Serializable{
         this.isPlayer = true;
     }
 
-    public Player() {
+    public Player(ClientInformation myInfo) {
+        this.myInfo = myInfo;
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.currentPosition = new Position(0, 0);
         this.health = 5;
@@ -25,7 +29,8 @@ public class Player extends Entity implements KillListener, Serializable{
         this.isPlayer = true;
     }
 
-    public Player(int health) {
+    public Player(int health, ClientInformation myInfo) {
+        this.myInfo = myInfo;
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.currentPosition = new Position(0, 0);
         this.health = health;
@@ -33,7 +38,8 @@ public class Player extends Entity implements KillListener, Serializable{
         this.isPlayer = true;
     }
 
-    public Player(Position currentPosition, int facing) {
+    public Player(Position currentPosition, int facing, ClientInformation myInfo) {
+        this.myInfo = myInfo;
         if (currentPosition.x <= 0 || currentPosition.y <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");

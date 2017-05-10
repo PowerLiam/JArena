@@ -34,7 +34,7 @@ public class Arena implements EntityActionListener, Serializable{
     }
 
 
-    public void cycle() {
+    public boolean cycle() { //Returning true signals that the game is over
         double sysNanoTimeStart = System.currentTimeMillis();
         for(Entity e : entities){
             e.fulfillVolition();
@@ -50,6 +50,10 @@ public class Arena implements EntityActionListener, Serializable{
             }
         }
         running.updateAllClientListeners(sendToClients);
+        if(players.size() == 1){
+            return true;
+        }
+        return false;
     }
 
     public void refreshSendables(){

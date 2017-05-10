@@ -22,6 +22,8 @@ public class Client {
 
     public static void main(String args[]) throws IOException {
         Client myClient = new Client();
+        myClient.queue();
+        myClient.renderBoard();
     }
 
     public Client() throws IOException {
@@ -35,6 +37,12 @@ public class Client {
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
     }
 
+    private void queue(){
+        while(latest == null){
+            renderQueue();
+        }
+    }
+
     private void updateVolition(Volition v) throws IOException {
         //Use to update server of a new Volition
         outputStream.writeObject(v);
@@ -46,9 +54,11 @@ public class Client {
         //TODO: Trigger a re-render here, since the server resent its entities
     }
 
+    public void renderQueue(){
+        //TODO: Add a 'Waiting for Players...' message. Called in a while loop, don't spam dialog
+    }
+
     public void renderBoard(){
         //TODO: Add Graphics Render
-        //TODO: **Clients should not render themselves, rather allow themselves to be Updated,
-        //TODO:   however this doesn't allow for my client to have a different icon than others!**
     }
 }

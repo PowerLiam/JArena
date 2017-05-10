@@ -18,6 +18,7 @@ public class Server implements Runnable{
     private ServerSocket update, volition;
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
+    private boolean isQueueing; //TODO: Modify from a Button
 
     public ArrayList<ClientListener> allClients = new ArrayList<>();
 
@@ -25,12 +26,13 @@ public class Server implements Runnable{
         volition = new ServerSocket(volitionPort);
         update = new ServerSocket(updatePort);
         myGame = new Arena("Java Battle Arena", this);
+        isQueueing = true;
         this.run();
     }
 
     @Override
     public void run() {
-        while(true){
+        while(isQueueing){
             try{
                 Socket updater = update.accept();
                 Socket volitioner = volition.accept();
@@ -41,6 +43,9 @@ public class Server implements Runnable{
                 e.printStackTrace();
             }
         }
+        //TODO: Cycle Arena
+        //TODO: Update the ScoreBoard with Players' kill counts
+        //TODO: Check for players.size() == 1 to end the game
     }
 
     public void updateAllClientListeners(Update u){

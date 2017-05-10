@@ -1,5 +1,9 @@
 package client;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -9,7 +13,7 @@ import global.Constants;
 import global.Position;
 import transferable.*;
 
-public class Client {
+public class Client implements ActionListener, KeyListener {
     private String host = "127.0.0.1";
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
@@ -19,6 +23,7 @@ public class Client {
     private ClientInformation me;
     private Update latest;
     private Thread upd;
+    private Volition currentVolition;
 
     public static void main(String args[]) throws IOException {
         Client myClient = new Client();
@@ -27,6 +32,8 @@ public class Client {
     }
 
     public Client() throws IOException {
+        currentVolition = new Volition(false,false);
+
         System.out.println("CHUNK30");
         me = new ClientInformation("Test Client", new Position(0,0), false);
         System.out.println("CHUNK32");
@@ -47,9 +54,9 @@ public class Client {
         }
     }
 
-    private void updateVolition(Volition v) throws IOException {
+    private void updateVolition() throws IOException {
         //Use to update server of a new Volition
-        outputStream.writeObject(v);
+        outputStream.writeObject(currentVolition);
     }
 
     public void getServerUpdate(Update u){
@@ -64,5 +71,42 @@ public class Client {
 
     public void renderBoard(){
         //TODO: Add Graphics Render
+    }
+    public void actionPerformed(ActionEvent event){
+
+    }
+
+    @Override
+    public void keyTyped(KeyEvent e) {
+
+    }
+
+    public void keyPressed(KeyEvent event) { //https://docs.oracle.com/javase/tutorial/uiswing/events/keylistener.html
+        if (event.getKeyCode() == KeyEvent.VK_UP) {
+            if (latest.getPlayer().facing() == Constants.FACING_NORTH){
+                currentVolition.setMovementVolition(true);
+                currentVolition.setFacingVolition(false);
+                currentVolition.setShootingVolition(false);
+            } else {
+                currentVolition.setMovementVolition(false);
+                currentVolition.setFacingVolition(true);
+                currentVolition.setShootingVolition(false);
+            }
+        } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
+
+        } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+
+        } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent e) {
+
+    }
+
+    public void modVolition(int facing){
+
     }
 }

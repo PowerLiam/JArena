@@ -16,7 +16,7 @@ public class Update implements Serializable{
     public void addPlayer(Player player){
         this.player = player;
     }
-
+    public Player getPlayer(){ return player; }
     public ArrayList<Entity> getEntities(){
         return entities;
     }

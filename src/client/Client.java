@@ -13,7 +13,9 @@ import global.Constants;
 import global.Position;
 import transferable.*;
 
-public class Client implements ActionListener, KeyListener {
+import javax.swing.*;
+
+public class Client extends JFrame implements ActionListener, KeyListener {
     private String host = "127.0.0.1"; //TODO: Prompt for Host
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
@@ -32,6 +34,8 @@ public class Client implements ActionListener, KeyListener {
     }
 
     public Client() throws IOException {
+        super();
+        guiInit();
         currentVolition = new Volition(false,false);
         me = new ClientInformation("Test Client", new Position(0,0), false); //TODO: Prompt for Name
         upd = new Thread(new ServerListener(this, new Socket(host, updatePort), me));
@@ -66,6 +70,10 @@ public class Client implements ActionListener, KeyListener {
     public void renderBoard(){
         //TODO: Add Graphics Render
     }
+
+    public void guiInit(){
+
+    }
     public void actionPerformed(ActionEvent event){
 
     }
@@ -76,23 +84,21 @@ public class Client implements ActionListener, KeyListener {
     }
 
     public void keyPressed(KeyEvent event) { //https://docs.oracle.com/javase/tutorial/uiswing/events/keylistener.html
+
         if (event.getKeyCode() == KeyEvent.VK_UP) {
-            if (latest.getPlayer().facing() == Constants.FACING_NORTH){
-                currentVolition.setMovementVolition(true);
-                currentVolition.setFacingVolition(false);
-                currentVolition.setShootingVolition(false);
-            } else {
-                currentVolition.setMovementVolition(false);
-                currentVolition.setFacingVolition(true);
-                currentVolition.setShootingVolition(false);
-            }
+            modVolitionDirectional(Constants.FACING_NORTH);
         } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-
+            modVolitionDirectional(Constants.FACING_SOUTH);
         } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-
+            modVolitionDirectional(Constants.FACING_WEST);
         } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-
+            modVolitionDirectional(Constants.FACING_EAST);
+        } else if(event.getKeyCode() == KeyEvent.VK_SPACE){
+            currentVolition.setFacingVolition(false);
+            currentVolition.setMovementVolition(false);
+            currentVolition.setShootingVolition(true);
         }
+
     }
 
     @Override
@@ -100,7 +106,16 @@ public class Client implements ActionListener, KeyListener {
 
     }
 
-    public void modVolition(int facing){
-
+    public void modVolitionDirectional(int facing){
+        currentVolition.setFacingVolition(facing);
+        if (latest.getPlayer().facing() == facing){
+            currentVolition.setMovementVolition(true);
+            currentVolition.setFacingVolition(false);
+            currentVolition.setShootingVolition(false);
+        } else {
+            currentVolition.setMovementVolition(false);
+            currentVolition.setFacingVolition(true);
+            currentVolition.setShootingVolition(false);
+        }
     }
 }

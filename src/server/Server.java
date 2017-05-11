@@ -5,26 +5,30 @@ import transferable.ClientInformation;
 import transferable.Update;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-public class Server implements Runnable{
-    private JList leaderBoard;
-    private JPanel panel1;
-    private JProgressBar gameProgress;
-    private JButton startStopButton;
-    private JTextField commandField;
+public class Server extends JFrame implements Runnable{
     private Arena myGame;
     private ServerSocket update, volition;
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
-    private boolean isQueueing; //TODO: Modify from a Button
+    private boolean isQueueing;
+    private boolean run = true;
 
     public ArrayList<ClientListener> allClients = new ArrayList<>();
+    private JTable leaderBoard;
+    private JPanel monitor;
+    private JButton stateChanger;
+    private JScrollPane scrollPane;
 
     public static void main(String[] args) throws IOException {
         Server run = new Server();
@@ -32,10 +36,24 @@ public class Server implements Runnable{
     }
 
     public Server() throws IOException {
+        super("Java Battle Arena");
         volition = new ServerSocket(volitionPort);
         update = new ServerSocket(updatePort);
         myGame = new Arena("Java Battle Arena", this);
         isQueueing = true;
+
+        setContentPane(monitor);
+        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setVisible(true);
+
+        stateChanger.addActionListener(e -> {
+           isQueueing = false;
+           stateChanger.setText("End Game");
+           stateChanger.removeActionListener(stateChanger.getActionListeners()[0]);
+           stateChanger.addActionListener(f -> {
+               run = false;
+           });
+        });
     }
 
     @Override
@@ -52,18 +70,20 @@ public class Server implements Runnable{
                 assignStartingPosition(pending.getMyPlayer());
                 allClients.add(pending);
                 System.out.println("Added Player: " + pendingInfo.getName() + " ID " + pending.getMyPlayer().id);
+                updateScoreBoard();
+
             } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
             }
         }
-        while(myGame.players.size() > 1){
+        System.out.println("Stopped Queueing.");
+        while(myGame.players.size() > 1 && run){
             boolean gameEnded = myGame.cycle();
-            //TODO: Update the ScoreBoard with Players' kill counts
-            if(gameEnded) break;
+            updateScoreBoard();
+            if(gameEnded) run = false;
         }
-        System.out.print("WINNER: " + myGame.players.get(0).myInfo.getName());
-        //TODO: Mark Winner on Scoreboard
+        stateChanger.setText("WINNER: " + myGame.players.get(0).myInfo.getName());
     }
 
     public void updateAllClientListeners(Update u){
@@ -74,5 +94,15 @@ public class Server implements Runnable{
 
     private void assignStartingPosition(Player next){ //For now, starting position is random.
         next.currentPosition = new Position((int) (Math.random() * 201), (int) (Math.random() * 201));
+    }
+
+    private void updateScoreBoard(){
+        Object[][] data = new Object[allClients.size()][2];
+        Collections.sort(allClients);
+        for(int i = 0; i < allClients.size() - 1; i++){
+            data[i][0] = allClients.get(i).clientInformation.getName();
+            data[i][1] = allClients.get(i).getMyPlayer().numberOfKills;
+        }
+        leaderBoard = new JTable(data, new String[]{"Player","Kills"});
     }
 }

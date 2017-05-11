@@ -8,14 +8,14 @@ import java.net.Socket;
 import global.Position;
 import transferable.*;
 
-public class ClientListener{
+public class ClientListener implements Comparable<ClientListener>{
     private ObjectOutputStream updateOutput;
     private ObjectInputStream updateInput;
 
     private String name;
     private ObjectInputStream updateInputStream;
     private ObjectOutputStream updateOutputStream;
-    private ClientInformation clientInformation;
+    public ClientInformation clientInformation;
     private Player myPlayer;
     private Thread vol;
     private Arena ParentArena;
@@ -51,5 +51,12 @@ public class ClientListener{
 
     public Player getMyPlayer(){
         return myPlayer;
+    }
+
+    @Override
+    public int compareTo(ClientListener other) {
+        if(this.getMyPlayer().numberOfKills < other.getMyPlayer().numberOfKills) return -1;
+        else if(this.getMyPlayer().numberOfKills > other.getMyPlayer().numberOfKills) return 1;
+        else return 0;
     }
 }

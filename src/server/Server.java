@@ -5,6 +5,9 @@ import transferable.ClientInformation;
 import transferable.Update;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -37,13 +40,14 @@ public class Server extends JFrame implements Runnable{
 
     public Server() throws IOException {
         super("Java Battle Arena");
+        myGame = new Arena("Java Battle Arena", this);
         volition = new ServerSocket(volitionPort);
         update = new ServerSocket(updatePort);
-        myGame = new Arena("Java Battle Arena", this);
         isQueueing = true;
 
         setContentPane(monitor);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        setSize(new Dimension(700,500));
         setVisible(true);
 
         stateChanger.addActionListener(e -> {
@@ -97,12 +101,29 @@ public class Server extends JFrame implements Runnable{
     }
 
     private void updateScoreBoard(){
+        DefaultTableModel model = new DefaultTableModel(allClients.size(), 3){
+            @Override
+            public boolean isCellEditable(int row, int column){
+                return false;
+            }
+
+            @Override
+            public String getColumnName(int column){
+                switch(column){
+                    case 0: return "ID";
+                    case 1: return "Player";
+                    case 2: return "Kills";
+                }
+                return null;
+            }
+        };
+        leaderBoard.setModel(model);
         Object[][] data = new Object[allClients.size()][2];
         Collections.sort(allClients);
-        for(int i = 0; i < allClients.size() - 1; i++){
-            data[i][0] = allClients.get(i).clientInformation.getName();
-            data[i][1] = allClients.get(i).getMyPlayer().numberOfKills;
+        for(int i = 0; i < allClients.size(); i++){
+            leaderBoard.setValueAt(allClients.get(i).getMyPlayer().id, i, 0);
+            leaderBoard.setValueAt(allClients.get(i).clientInformation.getName(), i, 1);
+            leaderBoard.setValueAt(allClients.get(i).getMyPlayer().numberOfKills, i, 2);
         }
-        leaderBoard = new JTable(data, new String[]{"Player","Kills"});
     }
 }

@@ -19,6 +19,7 @@ public class ClientListener implements Comparable<ClientListener>{
     private Player myPlayer;
     private Thread vol;
     private Arena ParentArena;
+    private int missedUpdateCount;
 
     public ClientListener(ObjectInputStream updateInput, ObjectOutputStream updateOutput, Socket volitionSocket, Arena Parent, ClientInformation myInfo) throws IOException, ClassNotFoundException {
 
@@ -44,8 +45,16 @@ public class ClientListener implements Comparable<ClientListener>{
         try {
             u.addPlayer(this.getMyPlayer());
             updateOutputStream.writeObject(u);
+            missedUpdateCount = 0;
         } catch (IOException e) {
-            e.printStackTrace();
+            missedUpdateCount++;
+            if(missedUpdateCount < 10) {
+                System.err.println(clientInformation.getName() + " has missed " + missedUpdateCount + " consecutive update(s).");
+            }
+            else if(missedUpdateCount == 10) {
+                System.err.println(clientInformation.getName() + " lost connection or left. Removing entity...");
+                getMyPlayer().die();
+            }
         }
     }
 
@@ -55,8 +64,8 @@ public class ClientListener implements Comparable<ClientListener>{
 
     @Override
     public int compareTo(ClientListener other) {
-        if(this.getMyPlayer().numberOfKills < other.getMyPlayer().numberOfKills) return -1;
-        else if(this.getMyPlayer().numberOfKills > other.getMyPlayer().numberOfKills) return 1;
+        if(this.getMyPlayer().numberOfKills < other.getMyPlayer().numberOfKills) return 1;
+        else if(this.getMyPlayer().numberOfKills > other.getMyPlayer().numberOfKills) return -1;
         else return 0;
     }
 }

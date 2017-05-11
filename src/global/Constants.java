@@ -11,4 +11,6 @@ public class Constants {
 
     public static final int UPDATE_PORT = 9091;
     public static final int VOLITION_PORT = 9092;
+
+    public static final int SQUARE_DIM = 50;
 }

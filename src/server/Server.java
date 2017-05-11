@@ -1,5 +1,6 @@
 package server;
 import global.Constants;
+import global.Position;
 import transferable.ClientInformation;
 import transferable.Update;
 
@@ -71,8 +72,7 @@ public class Server implements Runnable{
         }
     }
 
-    private void assignStartingPosition(Player next){
-        //TODO: Modify the Player's starting Position based on allClients.size() and Global.BOUNDARY_X and Global.BOUNDARY_Y
+    private void assignStartingPosition(Player next){ //For now, starting position is random.
+        next.currentPosition = new Position((int) (Math.random() * 201), (int) (Math.random() * 201));
     }
-
 }

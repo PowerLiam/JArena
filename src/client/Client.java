@@ -1,5 +1,6 @@
 package client;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -8,9 +9,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import global.Constants;
 import global.Position;
+import server.Entity;
+import server.Player;
 import transferable.*;
 
 import javax.swing.*;
@@ -26,6 +30,9 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     private Update latest;
     private Thread upd;
     private Volition currentVolition;
+    private Entity[][] board = new Entity[15][15];
+
+    private JPanel canvas;
 
     public static void main(String args[]) throws IOException {
         Client myClient = new Client();
@@ -44,6 +51,27 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.outputStream = new ObjectOutputStream(volitionSocket.getOutputStream());
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
+    }
+
+    public void guiInit(){
+        canvas = new JPanel();
+        this.add(canvas);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    //Builds Board
+    protected void paintComponent(Graphics g){
+        int xOffset = 0;
+        int yOffset = 0;
+        for(Entity[] row : board){//Each Row
+            for(Entity space : row){ //Each Square
+                if(space.equals(null)){
+                    g.drawRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
+                }
+                xOffset += Constants.SQUARE_DIM;
+            }
+            yOffset += Constants.SQUARE_DIM;
+        }
     }
 
     private void queue(){
@@ -68,12 +96,38 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     public void renderBoard(){
+        ArrayList<Entity> allEntities = latest.getEntities();
+        Player me = latest.getPlayer();
+        Position myPos = me.getPosition();
+        Position topLeft = new Position(myPos.x - 7, myPos.y - 7);
+        Position botRight = new Position(myPos.x + 7, myPos.y + 7);
+
+
+
+        for(Entity cur: allEntities){
+            if(cur.getPosition().x > topLeft.x && cur.getPosition().x < botRight.x){
+                if(cur.getPosition().y > topLeft.y && cur.getPosition().y < botRight.y){
+                    board[topLeft.x + cur.getPosition().x][topLeft.y + cur.getPosition().y] = cur;
+                }
+            }
+        }
+
+
+
+        //Loops through every space that I will render
+        for(int y = topLeft.y; y > botRight.y; y--){
+            for(int x = topLeft.x; x > botRight.x; x++){
+                Entity current;
+
+
+
+            }
+        }
+
         //TODO: Add Graphics Render
     }
 
-    public void guiInit(){
 
-    }
     public void actionPerformed(ActionEvent event){
 
     }

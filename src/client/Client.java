@@ -16,6 +16,7 @@ import global.Constants;
 import global.Position;
 import server.Entity;
 import server.Player;
+import server.Wall;
 import transferable.*;
 
 import javax.swing.*;
@@ -31,14 +32,22 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     private Update latest;
     private Thread upd;
     private Volition currentVolition;
-    private Entity[][] board = new Entity[15][15];
+    ArenaDisplay myDisp;
+    QueueDisplay myQueueDisp;
+    private Entity[][] board = new Entity[Constants.BOARD_VIEW_WINDOW_SIZE][Constants.BOARD_VIEW_WINDOW_SIZE];
+
+
+    Image scaledBulletIcon = new ImageIcon("bullet.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+    Image scaledPlayerIcon = new ImageIcon("client.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+    Image scaledEnemyIcon = new ImageIcon("enemy.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+
 
     private JPanel canvas;
 
     public static void main(String args[]) throws IOException, InterruptedException {
         Client myClient = new Client();
         myClient.queue();
-        myClient.renderBoard();
+
     }
 
     public Client() throws IOException {
@@ -55,14 +64,16 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     public void guiInit(){
-        canvas = new JPanel();
-        this.add(canvas);
+
+        myDisp = new ArenaDisplay();
+
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(new Dimension(700,700));
         this.setBackground(Color.WHITE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.setVisible(true);
+
     }
 
     private void updateVolition() throws IOException {
@@ -80,36 +91,27 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     public void getServerUpdate(Update u){
         //Called by ServerListener, not intended for other use.
         this.latest = u;
+        myDisp.paintComponent(this.getGraphics());
+        myDisp.repaint();
         //TODO: Trigger a re-render here, since the server resent its entities
     }
 
     public void renderQueue(){
-        this.add(new QueueDisplay());
+        myQueueDisp = new QueueDisplay();
+        this.add(myQueueDisp);
         this.pack();
     }
 
     //Builds Board
     //TODO: This should be in ArenaDisplay, overriding paintComponent(Graphics g) so that we can use repaint();
     //TODO: http://stackoverflow.com/questions/13075417/java-jframe-graphics
-    protected void paintComponent(Graphics g){
-        int xOffset = 0;
-        int yOffset = 0;
-        for(Entity[] row : board){//Each Row
-            for(Entity space : row){ //Each Square
-                if(space.equals(null)){
-                    g.drawRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
-                }
-                xOffset += Constants.SQUARE_DIM;
-            }
-            yOffset += Constants.SQUARE_DIM;
-        }
-    }
+
 
     public void renderBoard(){
         ArrayList<Entity> allEntities = latest.getEntities();
         Player me = latest.getPlayer();
         Position myPos = me.getPosition();
-        Position topLeft = new Position(myPos.x - 7, myPos.y - 7); //TODO: This could be negative!
+        Position topLeft = new Position(myPos.x - 7, myPos.y - 7);
         Position botRight = new Position(myPos.x + 7, myPos.y + 7);
 
 
@@ -117,7 +119,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         for(Entity cur: allEntities){
             if(cur.getPosition().x > topLeft.x && cur.getPosition().x < botRight.x){
                 if(cur.getPosition().y > topLeft.y && cur.getPosition().y < botRight.y){
-                    board[topLeft.x + cur.getPosition().x][topLeft.y + cur.getPosition().y] = cur; //TODO: Throwing ArrayIndexOutOfBounds!
+                    board[cur.getPosition().x - topLeft.x][cur.getPosition().y - topLeft.y] = cur;
                 }
             }
         }
@@ -128,9 +130,9 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         for(int y = topLeft.y; y > botRight.y; y--){
             for(int x = topLeft.x; x > botRight.x; x++){
                 Entity current;
-
-
-
+                if(x < 0 || y < 0){
+                    board[x][y] = new Wall();
+                }
             }
         }
 
@@ -161,6 +163,12 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             currentVolition.setFacingVolition(false);
             currentVolition.setMovementVolition(false);
             currentVolition.setShootingVolition(true);
+        }
+        try {
+            updateVolition();
+        } catch (IOException e) {
+            System.err.print("Volition not sent properly");
+            e.printStackTrace();
         }
         //TODO: Call updateVolition() when you're ready to send currentVolition() to the Server.
     }
@@ -207,8 +215,33 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.setFont(new Font("Helvetica", Font.PLAIN, 30));
-            g.drawString("Got an Update!",215,350);
+            renderBoard();
+            //g.setFont(new Font("Helvetica", Font.PLAIN, 30));
+            //g.drawString("Got an Update!",215,350);
+            int xOffset = 0;
+            int yOffset = 0;
+            for(Entity[] row : board){//Each Row
+                for(Entity space : row){ //Each Square
+                    if(space.equals(null)){
+                        g.setColor(Color.lightGray);
+                        g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
+                        break;
+                    }
+                    if(space.isWall) {
+                        g.setColor(Color.DARK_GRAY);
+                        g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
+                    }
+                    if(space.equals(latest.getPlayer())){
+                        g.drawImage(scaledPlayerIcon, xOffset, yOffset, this);
+                    } else if(space.isPlayer){
+                        g.drawImage(scaledEnemyIcon, xOffset, yOffset, this);
+                    } else {
+                        g.drawImage(scaledBulletIcon, xOffset, yOffset, this);
+                    }
+                    xOffset += Constants.SQUARE_DIM;
+                }
+                yOffset += Constants.SQUARE_DIM;
+            }
         }
 
         @Override

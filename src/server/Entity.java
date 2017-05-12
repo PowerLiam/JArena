@@ -16,6 +16,7 @@ public abstract class Entity implements Serializable{
     private boolean hasShootingVolition = false;
     private boolean hasFacingVolition = false;
     public boolean isPlayer;
+    public boolean isWall = false;
     public int id = -1;
 
     private transient ArrayList<EntityActionListener> listeners = new ArrayList<>();

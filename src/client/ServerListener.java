@@ -13,6 +13,7 @@ public class ServerListener implements Runnable {
     private ObjectOutputStream outputStream;
     private ClientInformation info;
     private Client runner;
+    private boolean recievedFirstUpdate = false;
 
     public ServerListener(Client runner, Socket socket, ClientInformation info) throws IOException {
         this.runner = runner;
@@ -29,6 +30,11 @@ public class ServerListener implements Runnable {
         while(true){
             try {
                 Update toNotify = (Update) inputStream.readObject();
+                if(!recievedFirstUpdate) {
+                    runner.remove(runner.myQueueDisp);
+                    recievedFirstUpdate = true;
+                    runner.add(runner.myDisp);
+                }
                 runner.getServerUpdate(toNotify);
             } catch(SocketException e){
                 System.err.println("Lost connection to server.");

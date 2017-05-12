@@ -64,7 +64,9 @@ public class Server implements Runnable{
             updateScoreBoard();
             if(gameEnded) run = false;
         }
-        JOptionPane.showMessageDialog(null, "Winner: " + myGame.players.get(0).myInfo.getName());
+        for(ServerListener s : listeners) s.endGame();
+        if(myGame.players.size() > 0)
+            JOptionPane.showMessageDialog(null, myGame.players.get(0).myInfo.getName() + " won the game with " + myGame.players.get(0).numberOfKills + " kills.");
     }
 
     public void updateAllClientListeners(Update u){

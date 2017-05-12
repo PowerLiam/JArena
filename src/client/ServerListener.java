@@ -43,6 +43,11 @@ public class ServerListener implements Runnable {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+                try {
+                    runner.loseConnection();
+                } catch (InterruptedException e1) {
+                    //This will never happen
+                }
                 break;
             }
             catch (IOException | ClassNotFoundException e) {

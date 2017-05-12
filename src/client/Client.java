@@ -54,29 +54,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
     }
 
-    public void guiInit(){
-        canvas = new JPanel();
-        this.add(canvas);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-    }
-
-    //Builds Board
-    protected void paintComponent(Graphics g){
-        int xOffset = 0;
-        int yOffset = 0;
-        for(Entity[] row : board){//Each Row
-            for(Entity space : row){ //Each Square
-                if(space.equals(null)){
-                    g.drawRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
-                }
-                xOffset += Constants.SQUARE_DIM;
-            }
-            yOffset += Constants.SQUARE_DIM;
-        }
-    }
-
     private void queue() throws InterruptedException {
-        while(latest == null){ //TODO: Resource intensive?
+        while(latest == null){
             renderQueue();
             TimeUnit.SECONDS.sleep(1);
         }
@@ -93,8 +72,36 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         //TODO: Trigger a re-render here, since the server resent its entities
     }
 
+    public void guiInit(){
+        canvas = new JPanel();
+        this.add(canvas);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setSize(new Dimension(700,700));
+        this.setBackground(Color.WHITE);
+        this.setLocationRelativeTo(null);
+        this.setVisible(true);
+    }
+
+    //Builds Board
+    //TODO: This should be in ArenaDisplay, overriding paintComponent(Graphics g) so that we can use repaint();
+    //TODO: http://stackoverflow.com/questions/13075417/java-jframe-graphics
+    protected void paintComponent(Graphics g){
+        int xOffset = 0;
+        int yOffset = 0;
+        for(Entity[] row : board){//Each Row
+            for(Entity space : row){ //Each Square
+                if(space.equals(null)){
+                    g.drawRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
+                }
+                xOffset += Constants.SQUARE_DIM;
+            }
+            yOffset += Constants.SQUARE_DIM;
+        }
+    }
+
     public void renderQueue(){
-        //TODO: Add a 'Waiting for Players...' message. Called in a while loop, don't spam dialog
+        this.add(new QueueDisplay());
+        this.pack();
     }
 
     public void renderBoard(){
@@ -172,6 +179,46 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             currentVolition.setMovementVolition(false);
             currentVolition.setFacingVolition(true);
             currentVolition.setShootingVolition(false);
+        }
+    }
+
+    class QueueDisplay extends JPanel {
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            g.drawString("Waiting for Server...",215,350);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(700, 700);
+        }
+    }
+
+    class ArenaDisplay extends JPanel {
+        Update test;
+
+        public ArenaDisplay(Update u){
+            this.test = u;
+        }
+
+        public void testUpdate(Update u){
+            this.test = u;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            g.drawString("Got an Update!",215,350);
+            g.drawString(test.toString(), 175, 400);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(700, 700);
         }
     }
 }

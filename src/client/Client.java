@@ -42,9 +42,6 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     Image scaledPlayerIcon = new ImageIcon("client.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
     Image scaledEnemyIcon = new ImageIcon("enemy.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
 
-
-    private JPanel canvas;
-
     public static void main(String args[]) throws IOException, InterruptedException {
         Client myClient = new Client();
         myClient.queue();
@@ -96,14 +93,13 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     public void getServerUpdate(Update u){
         //Called by ServerListener, not intended for other use.
         this.latest = u;
-        myDisp.paintComponent(this.getGraphics());
-        myDisp.repaint();
-        //TODO: Trigger a re-render here, since the server resent its entities
+        this.repaint();
+        this.revalidate();
     }
 
     public void loseConnection() throws InterruptedException {
         //Called by ServerListener, not intended for other use.
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(3);
         System.exit(-1);
     }
 
@@ -113,15 +109,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.pack();
     }
 
-    //Builds Board
-    //TODO: This should be in ArenaDisplay, overriding paintComponent(Graphics g) so that we can use repaint();
-    //TODO: http://stackoverflow.com/questions/13075417/java-jframe-graphics
-
-
     public void renderBoard(){
         ArrayList<Entity> allEntities = latest.getEntities();
         Player me = latest.getPlayer();
         Position myPos = me.getPosition();
+        System.out.println("Position: " + myPos.x + "," + myPos.y);
         Position topLeft = new Position(myPos.x - 7, myPos.y - 7);
         Position botRight = new Position(myPos.x + 7, myPos.y + 7);
 
@@ -146,8 +138,6 @@ public class Client extends JFrame implements ActionListener, KeyListener {
                 }
             }
         }
-
-        //TODO: Add Graphics Render
     }
 
 
@@ -181,7 +171,6 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             System.err.print("Volition not sent properly");
             e.printStackTrace();
         }
-        //TODO: Call updateVolition() when you're ready to send currentVolition() to the Server.
     }
 
     @Override
@@ -227,13 +216,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             renderBoard();
-            //g.setFont(new Font("Helvetica", Font.PLAIN, 30));
-            //g.drawString("Got an Update!",215,350);
             int xOffset = 0;
             int yOffset = 0;
             for(Entity[] row : board){//Each Row
                 for(Entity space : row){ //Each Square
-                    if(space.equals(null)){
+                    if(space == null){
                         g.setColor(Color.lightGray);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                         break;

@@ -13,7 +13,7 @@ public class ServerListener implements Runnable {
     private ObjectOutputStream outputStream;
     private ClientInformation info;
     private Client runner;
-    private boolean recievedFirstUpdate = false;
+    private boolean receivedFirstUpdate = false;
 
     public ServerListener(Client runner, Socket socket, ClientInformation info) throws IOException {
         this.runner = runner;
@@ -30,9 +30,9 @@ public class ServerListener implements Runnable {
         while(true){
             try {
                 Update toNotify = (Update) inputStream.readObject();
-                if(!recievedFirstUpdate) {
-                    runner.remove(runner.myQueueDisp);
-                    recievedFirstUpdate = true;
+                if(!receivedFirstUpdate) {
+                    runner.getContentPane().removeAll();
+                    receivedFirstUpdate = true;
                     runner.add(runner.myDisp);
                 }
                 runner.getServerUpdate(toNotify);

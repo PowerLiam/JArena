@@ -11,7 +11,7 @@ public class Player extends Entity implements KillListener, Serializable{
 
     public Player(Position currentPosition, int facing, int health, ClientInformation myInfo) {
         this.myInfo = myInfo;
-        if (currentPosition.x <= 0 || currentPosition.y <= 0)
+        if (currentPosition.getX() <= 0 || currentPosition.getY() <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.currentPosition = currentPosition;
@@ -40,7 +40,7 @@ public class Player extends Entity implements KillListener, Serializable{
 
     public Player(Position currentPosition, int facing, ClientInformation myInfo) {
         this.myInfo = myInfo;
-        if (currentPosition.x <= 0 || currentPosition.y <= 0)
+        if (currentPosition.getX() <= 0 || currentPosition.getY() <= 0)
             throw new IllegalArgumentException("Position must be positive.");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.health = 5;
@@ -55,27 +55,27 @@ public class Player extends Entity implements KillListener, Serializable{
         int bulletPosY = -1;
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 < Constants.BOUNDARY_Y) {
-                    bulletPosY = currentPosition.y + 1;
-                    bulletPosX = currentPosition.x;
+                if(currentPosition.getY() + 1 < Constants.BOUNDARY_Y) {
+                    bulletPosY = currentPosition.getY() + 1;
+                    bulletPosX = currentPosition.getX();
                 }
                 break;
             case(Constants.FACING_SOUTH) :
-                if(currentPosition.y - 1 >= 0) {
-                    bulletPosY = currentPosition.y - 1;
-                    bulletPosX = currentPosition.x;
+                if(currentPosition.getY() - 1 >= 0) {
+                    bulletPosY = currentPosition.getY() - 1;
+                    bulletPosX = currentPosition.getX();
                 }
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < Constants.BOUNDARY_X) {
-                    bulletPosY = currentPosition.y;
-                    bulletPosX = currentPosition.x + 1;
+                if(currentPosition.getX() + 1 < Constants.BOUNDARY_X) {
+                    bulletPosY = currentPosition.getY();
+                    bulletPosX = currentPosition.getX() + 1;
                 }
                 break;
             case(Constants.FACING_WEST) :
-                if(currentPosition.x - 1 >= 0) {
-                    bulletPosY = currentPosition.y;
-                    bulletPosX = currentPosition.x - 1;
+                if(currentPosition.getX() - 1 >= 0) {
+                    bulletPosY = currentPosition.getY();
+                    bulletPosX = currentPosition.getX() - 1;
                 }
                 break;
         }

@@ -1,6 +1,8 @@
 package transferable;
 
-public class Volition {
+import java.io.Serializable;
+
+public class Volition implements Serializable{
     private boolean hasMovementVolition;
     private boolean hasFacingVolition;
     private boolean hasShootingVolition;
@@ -20,35 +22,35 @@ public class Volition {
         this.facingVolition = -1;
     }
 
-    public boolean isMovementVolition() {
+    public synchronized boolean isMovementVolition() {
         return hasMovementVolition;
     }
 
-    public void setMovementVolition(boolean hasMovementVolition) {
+    public synchronized void setMovementVolition(boolean hasMovementVolition) {
         this.hasMovementVolition = hasMovementVolition;
     }
 
-    public boolean isFacingVolition() {
+    public synchronized boolean isFacingVolition() {
         return hasFacingVolition;
     }
 
-    public void setFacingVolition(boolean hasFacingVolition) {
+    public synchronized void setFacingVolition(boolean hasFacingVolition) {
         this.hasFacingVolition = hasFacingVolition;
     }
 
-    public boolean isShootingVolition() {
+    public synchronized boolean isShootingVolition() {
         return hasShootingVolition;
     }
 
-    public void setShootingVolition(boolean hasShootingVolition) {
+    public synchronized void setShootingVolition(boolean hasShootingVolition) {
         this.hasShootingVolition = hasShootingVolition;
     }
 
-    public int getFacingVolition() {
+    public synchronized int getFacingVolition() {
         return facingVolition;
     }
 
-    public void setFacingVolition(int facingVolition) {
+    public synchronized void setFacingVolition(int facingVolition) {
         this.facingVolition = facingVolition;
     }
 }

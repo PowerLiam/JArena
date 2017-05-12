@@ -37,6 +37,7 @@ public class VolitionListener implements Runnable{
         while(run){
             try {
                 Volition toNotify = (Volition) inputStream.readObject();
+                System.out.println("V[ Move: " + toNotify.isMovementVolition() + " Face: " + toNotify.isFacingVolition() + " Shoot: " + toNotify.isShootingVolition());
                 runner.updateVolition(toNotify);
             } catch (SocketException e){
                 System.err.println("Lost connection to " + clientInformation.getName());

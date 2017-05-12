@@ -63,6 +63,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.outputStream = new ObjectOutputStream(volitionSocket.getOutputStream());
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
+        addKeyListener(this);
     }
 
     public void guiInit(){
@@ -81,6 +82,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     private void updateVolition() throws IOException {
         //Use to update server of a new Volition
         outputStream.writeObject(currentVolition);
+        System.out.println("Wrote object");
     }
 
     private void queue() throws InterruptedException {
@@ -93,6 +95,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     public void getServerUpdate(Update u){
         //Called by ServerListener, not intended for other use.
         this.latest = u;
+        System.out.println("New Position: [" + u.getPlayer().currentPosition.getX() + "," + u.getPlayer().currentPosition.getY() + "]");
         this.repaint();
         this.revalidate();
     }
@@ -113,18 +116,18 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         ArrayList<Entity> allEntities = latest.getEntities();
         Player me = latest.getPlayer();
         Position myPos = me.getPosition();
-        System.out.println("Position: " + myPos.x + "," + myPos.y);
-        Position topLeft = new Position(myPos.x - 7, myPos.y - 7);
-        Position botRight = new Position(myPos.x + 7, myPos.y + 7);
+        System.out.println("Position: " + myPos.getX() + "," + myPos.getY());
+        Position topLeft = new Position(myPos.getX() - 7, myPos.getY() - 7);
+        Position botRight = new Position(myPos.getX() + 7, myPos.getY() + 7);
 
 
 
         for(Entity cur: allEntities){
             //System.out.println("OUTSIDE: " + cur.toString());
-            if(cur.getPosition().x >= topLeft.x && cur.getPosition().x <= botRight.x){
-                if(cur.getPosition().y >= topLeft.y && cur.getPosition().y <= botRight.y){
-                    board[cur.getPosition().x - topLeft.x][cur.getPosition().y - topLeft.y] = cur;
-                    System.out.println("INSIDE: " + cur.toString() + (cur.getPosition().x - topLeft.x) + "   " + (cur.getPosition().y - topLeft.y));
+            if(cur.getPosition().getX() >= topLeft.getX() && cur.getPosition().getX() <= botRight.getX()){
+                if(cur.getPosition().getY() >= topLeft.getY() && cur.getPosition().getY() <= botRight.getY()){
+                    board[cur.getPosition().getX() - topLeft.getX()][cur.getPosition().getY() - topLeft.getY()] = cur;
+                   // System.out.println("INSIDE: " + cur.toString() + (cur.getPosition().getX() - topLeft.getX()) + "   " + (cur.getPosition().getY() - topLeft.getY()));
                 }
             }
         }
@@ -135,12 +138,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         //Loops through every space that I will render
         int realx = 0;
         int realy = 0;
-        for(int y = topLeft.y; y < botRight.y; y++){
-            for(int x = topLeft.x; x < botRight.x; x++){
-                System.out.print("      [x: " + x + "  y: " + y + "]");
+        for(int y = topLeft.getY(); y < botRight.getY(); y++){
+            realx = 0;
+            for(int x = topLeft.getX(); x < botRight.getX(); x++){
                 if(x < 0 || y < 0){
                     board[realx][realy] = new Wall();
-                    System.out.println("adding wall at " + x + " " + y + "    really " + realx + " " + realy);
                 }
                 realx++;
             }
@@ -175,6 +177,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             currentVolition.setShootingVolition(true);
         }
         try {
+            System.out.println("Updating volition...");
             updateVolition();
         } catch (IOException e) {
             System.err.print("Volition not sent properly");
@@ -232,27 +235,21 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             for(Entity[] row : board){//Each Row
                 int xOffset = 0;
                 for(Entity space : row){ //Each Square
-                    System.out.print("OFFSETS: X " + xOffset + "  Y " + yOffset + "      :");
                     if(space == null){
-                        System.out.println("empty");
                         g.setColor(Color.lightGray);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                         xOffset += Constants.SQUARE_DIM;
                         continue;
                     }
-                    if(space.isWall) {
-                        System.out.println("wall");
+                    if(space.isWall()) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                     }
                     if(space.equals(latest.getPlayer())){
-                        System.out.println("me");
                         g.drawImage(scaledPlayerIcon, xOffset, yOffset, this);
-                    } else if(space.isPlayer){
-                        System.out.println("enemy");
+                    } else if(space.isPlayer()){
                         g.drawImage(scaledEnemyIcon, xOffset, yOffset, this);
                     } else {
-                        System.out.println("bullet");
                         g.drawImage(scaledBulletIcon, xOffset, yOffset, this);
                     }
                     xOffset += Constants.SQUARE_DIM;

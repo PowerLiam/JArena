@@ -8,15 +8,15 @@ import java.util.ArrayList;
 
 public abstract class Entity implements Serializable{
     public Position currentPosition;
-    public int facing;
-    private int facingVolition;
+    protected int facing;
+    protected int facingVolition;
     protected int health;
-    public boolean alive = true;
-    private boolean hasMovementVolition = false;
-    private boolean hasShootingVolition = false;
-    private boolean hasFacingVolition = false;
-    public boolean isPlayer;
-    public boolean isWall = false;
+    protected boolean alive = true;
+    protected boolean hasMovementVolition = false;
+    protected boolean hasShootingVolition = false;
+    protected boolean hasFacingVolition = false;
+    protected boolean isPlayer;
+    protected boolean isWall = false;
     public int id = -1;
 
     private transient ArrayList<EntityActionListener> listeners = new ArrayList<>();
@@ -48,6 +48,14 @@ public abstract class Entity implements Serializable{
         this.facingVolition = toFace;
     }
 
+    public synchronized boolean isWall(){
+        return isWall;
+    }
+
+    public synchronized boolean isPlayer(){
+        return isPlayer;
+    }
+
     public void setVolition(Volition v){
         this.hasFacingVolition = v.isFacingVolition();
         this.hasMovementVolition = v.isMovementVolition();
@@ -57,10 +65,6 @@ public abstract class Entity implements Serializable{
 
     public void setId(int id){
         this.id = id;
-    }
-
-    public boolean isPlayer() {
-        return isPlayer;
     }
 
     public Position getPosition() {
@@ -76,24 +80,25 @@ public abstract class Entity implements Serializable{
         if(health < 1) die();
     }
 
-    public int facing() {
+    public synchronized int facing() {
         return facing;
     }
 
-    public void changeDirection(int facingDirection){
+    public synchronized void changeDirection(int facingDirection){
         facing = facingDirection;
     }
 
-    public int getHealth() {
+    public synchronized int getHealth() {
         return health;
     }
 
-    public void setHealth(int health) {
+    public synchronized void setHealth(int health) {
         this.health = health;
     }
 
 
     public boolean fulfillVolition(){
+        System.out.print(this.facing + " Entity is ");
         if(!alive) throw new IllegalStateException("Dead things have no volition.");
         //Volition Priority: Face, Move, Shoot. If ever set to multiple, accept in order of priority. (This should never happen)
         if(this.hasFacingVolition()){
@@ -101,21 +106,25 @@ public abstract class Entity implements Serializable{
             //Reset back to default
             this.facingVolition = -1; //This should NEVER be accessed when its value is -1, a check for hasFacingVolition() should precede getter of this value
             this.hasFacingVolition = false;
+            System.out.println(" changing facing volition.");
             return true;
         }
         else if(this.hasMovementVolition()){
             this.move();
             //Reset back to default
             this.hasMovementVolition = false;
+            System.out.println(" changing moving volition.");
             return true;
         }
         else if(this.hasShootingVolition()){
             this.shoot();
             //Reset back to default
             this.hasShootingVolition = false;
+            System.out.println(" changing shooting volition.");
             return true;
         }
         else{
+            System.out.println("not changing.");
             return false;
         }
     }
@@ -144,22 +153,23 @@ public abstract class Entity implements Serializable{
     public void move() {
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.y + 1 < Constants.BOUNDARY_Y)
-                    currentPosition.y++;
+                if(currentPosition.getY() + 1 < Constants.BOUNDARY_Y)
+                    currentPosition.setY(currentPosition.getY() + 1);
                 break;
             case(Constants.FACING_SOUTH) :
-                if(currentPosition.y - 1 >= 0)
-                    currentPosition.y--;
+                if(currentPosition.getY() - 1 >= 0)
+                    currentPosition.setY( currentPosition.getY() - 1);
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.x + 1 < Constants.BOUNDARY_X)
-                    currentPosition.x++;
+                if(currentPosition.getX() + 1 < Constants.BOUNDARY_X)
+                    currentPosition.setX(currentPosition.getX() + 1);
                 break;
             case(Constants.FACING_WEST) :
-                if(currentPosition.x - 1 >= 0)
-                    currentPosition.x--;
+                if(currentPosition.getX() - 1 >= 0)
+                    currentPosition.setX( currentPosition.getX() - 1);
                 break;
         }
+        System.out.println("New Entity Position: " + currentPosition.getX() + "," + currentPosition.getY());
     }
 
     protected void die(){
@@ -173,6 +183,50 @@ public abstract class Entity implements Serializable{
         if(isPlayer) type = "Player";
         else if(isWall) type = "Wall";
         else type = "Bullet";
-        return ("E[ Position: (" + currentPosition.x + "," + currentPosition.y + ") Type: " + type + "]");
+        return ("E[ Position: (" + currentPosition.getX() + "," + currentPosition.getY() + ") Type: " + type + "]");
+    }
+
+    public synchronized void setCurrentPosition(Position currentPosition) {
+        this.currentPosition = currentPosition;
+    }
+
+    public synchronized int getFacing() {
+        return facing;
+    }
+
+    public synchronized void setFacing(int facing) {
+        this.facing = facing;
+    }
+
+    public synchronized boolean isAlive() {
+        return alive;
+    }
+
+    public synchronized void setAlive(boolean alive) {
+        this.alive = alive;
+    }
+
+    public synchronized boolean isHasMovementVolition() {
+        return hasMovementVolition;
+    }
+
+    public synchronized void setHasMovementVolition(boolean hasMovementVolition) {
+        this.hasMovementVolition = hasMovementVolition;
+    }
+
+    public synchronized boolean isHasShootingVolition() {
+        return hasShootingVolition;
+    }
+
+    public synchronized void setHasShootingVolition(boolean hasShootingVolition) {
+        this.hasShootingVolition = hasShootingVolition;
+    }
+
+    public synchronized boolean isHasFacingVolition() {
+        return hasFacingVolition;
+    }
+
+    public synchronized void setHasFacingVolition(boolean hasFacingVolition) {
+        this.hasFacingVolition = hasFacingVolition;
     }
 }

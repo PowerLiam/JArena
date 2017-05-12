@@ -54,16 +54,27 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
     }
 
-    private void queue() throws InterruptedException {
-        while(latest == null){
-            renderQueue();
-            TimeUnit.SECONDS.sleep(1);
-        }
+    public void guiInit(){
+        canvas = new JPanel();
+        this.add(canvas);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        this.setSize(new Dimension(700,700));
+        this.setBackground(Color.WHITE);
+        this.setLocationRelativeTo(null);
+        this.setResizable(false);
+        this.setVisible(true);
     }
 
     private void updateVolition() throws IOException {
         //Use to update server of a new Volition
         outputStream.writeObject(currentVolition);
+    }
+
+    private void queue() throws InterruptedException {
+        while(latest == null){
+            renderQueue();
+            TimeUnit.SECONDS.sleep(1);
+        }
     }
 
     public void getServerUpdate(Update u){
@@ -72,14 +83,9 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         //TODO: Trigger a re-render here, since the server resent its entities
     }
 
-    public void guiInit(){
-        canvas = new JPanel();
-        this.add(canvas);
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(new Dimension(700,700));
-        this.setBackground(Color.WHITE);
-        this.setLocationRelativeTo(null);
-        this.setVisible(true);
+    public void renderQueue(){
+        this.add(new QueueDisplay());
+        this.pack();
     }
 
     //Builds Board
@@ -97,11 +103,6 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             }
             yOffset += Constants.SQUARE_DIM;
         }
-    }
-
-    public void renderQueue(){
-        this.add(new QueueDisplay());
-        this.pack();
     }
 
     public void renderBoard(){
@@ -161,7 +162,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             currentVolition.setMovementVolition(false);
             currentVolition.setShootingVolition(true);
         }
-
+        //TODO: Call updateVolition() when you're ready to send currentVolition() to the Server.
     }
 
     @Override
@@ -182,6 +183,10 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         }
     }
 
+
+    /**
+     * In-Line Classes for JPanel elements intended for rendering
+     */
     class QueueDisplay extends JPanel {
 
         @Override
@@ -198,22 +203,12 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     class ArenaDisplay extends JPanel {
-        Update test;
-
-        public ArenaDisplay(Update u){
-            this.test = u;
-        }
-
-        public void testUpdate(Update u){
-            this.test = u;
-        }
 
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            g.setFont(new Font("Helvetica", Font.PLAIN, 30));
             g.drawString("Got an Update!",215,350);
-            g.drawString(test.toString(), 175, 400);
         }
 
         @Override

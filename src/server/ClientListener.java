@@ -31,7 +31,7 @@ public class ClientListener implements Comparable<ClientListener>{
         ParentArena = Parent;
         myPlayer = new Player(clientInformation);
         myPlayer.setId(ParentArena.getId());
-        ParentArena.add(myPlayer, new Position(0,0));
+        ParentArena.add(myPlayer);
 
         vol = new Thread(new VolitionListener(this, volitionSocket, clientInformation));
         vol.start();
@@ -42,18 +42,21 @@ public class ClientListener implements Comparable<ClientListener>{
     }
 
     public void sendClientUpdate(Update u){
-        try {
-            u.addPlayer(this.getMyPlayer());
-            updateOutputStream.writeObject(u);
-            missedUpdateCount = 0;
-        } catch (IOException e) {
-            missedUpdateCount++;
-            if(missedUpdateCount < 10) {
-                System.err.println(clientInformation.getName() + " has missed " + missedUpdateCount + " consecutive update(s).");
-            }
-            else if(missedUpdateCount == 10) {
-                System.err.println(clientInformation.getName() + " lost connection or left. Removing entity...");
-                getMyPlayer().die();
+        synchronized (this) {
+            try {
+                u.addPlayer(this.getMyPlayer());
+                System.out.println(clientInformation.getName() + " Sending back : (" + getMyPlayer().currentPosition.getX() + "'" + getMyPlayer().currentPosition.getY() + ")");
+                updateOutputStream.reset();
+                updateOutputStream.writeObject(u);
+                missedUpdateCount = 0;
+            } catch (IOException e) {
+                missedUpdateCount++;
+                if (missedUpdateCount < 10) {
+                    System.err.println(clientInformation.getName() + " has missed " + missedUpdateCount + " consecutive update(s).");
+                } else if (missedUpdateCount == 10) {
+                    System.err.println(clientInformation.getName() + " lost connection or left. Removing entity...");
+                    getMyPlayer().die();
+                }
             }
         }
     }

@@ -33,6 +33,16 @@ public class Arena implements EntityActionListener, Serializable{
         }
     }
 
+    public void add(Entity entity){
+        entity.addActionListener(this);
+        entities.add(entity);
+        if(entity.isPlayer) {
+            players.add((Player)entity);
+            totalPlayers++;
+            livingPlayers++;
+        }
+    }
+
 
     public boolean cycle() { //Returning true signals that the game is over
         double sysNanoTimeStart = System.currentTimeMillis();

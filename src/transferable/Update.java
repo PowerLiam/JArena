@@ -13,11 +13,11 @@ public class Update implements Serializable{
         this.entities = entities;
     }
 
-    public void addPlayer(Player player){
+    public synchronized void addPlayer(Player player){
         this.player = player;
     }
-    public Player getPlayer(){ return player; }
-    public ArrayList<Entity> getEntities(){
+    public synchronized Player getPlayer(){ return player; }
+    public synchronized ArrayList<Entity> getEntities(){
         return entities;
     }
 }

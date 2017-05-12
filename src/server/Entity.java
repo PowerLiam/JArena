@@ -23,27 +23,27 @@ public abstract class Entity implements Serializable{
 
     public abstract void shoot();
 
-    public boolean hasMovementVolition() {
+    public synchronized boolean hasMovementVolition() {
         return hasMovementVolition;
     }
 
-    public void setMovementVolition() {
+    public synchronized void setMovementVolition() {
         this.hasMovementVolition = true;
     }
 
-    public boolean hasShootingVolition() {
+    public synchronized boolean hasShootingVolition() {
         return hasShootingVolition;
     }
 
-    public void setShootingVolition() {
+    public synchronized void setShootingVolition() {
         this.hasShootingVolition = true;
     }
 
-    public boolean hasFacingVolition() {
+    public synchronized boolean hasFacingVolition() {
         return hasFacingVolition;
     }
 
-    public void setFacingVolition(int toFace) {
+    public synchronized void setFacingVolition(int toFace) {
         this.hasFacingVolition = true;
         this.facingVolition = toFace;
     }
@@ -56,26 +56,26 @@ public abstract class Entity implements Serializable{
         return isPlayer;
     }
 
-    public void setVolition(Volition v){
+    public synchronized void setVolition(Volition v){
         this.hasFacingVolition = v.isFacingVolition();
         this.hasMovementVolition = v.isMovementVolition();
         this.hasShootingVolition = v.isShootingVolition();
         this.facingVolition = v.getFacingVolition();
     }
 
-    public void setId(int id){
+    public synchronized void setId(int id){
         this.id = id;
     }
 
-    public Position getPosition() {
+    public synchronized Position getPosition() {
         return currentPosition;
     }
 
-    public void addActionListener(EntityActionListener x){
+    public synchronized void addActionListener(EntityActionListener x){
         listeners.add(x);
     }
 
-    public void takeDamage() {
+    public synchronized void takeDamage() {
         health--;
         if(health < 1) die();
     }
@@ -97,7 +97,7 @@ public abstract class Entity implements Serializable{
     }
 
 
-    public boolean fulfillVolition(){
+    public synchronized boolean fulfillVolition(){
         System.out.print(this.facing + " Entity is ");
         if(!alive) throw new IllegalStateException("Dead things have no volition.");
         //Volition Priority: Face, Move, Shoot. If ever set to multiple, accept in order of priority. (This should never happen)
@@ -129,11 +129,12 @@ public abstract class Entity implements Serializable{
         }
     }
 
-    public void setPosition(Position p){
-        currentPosition = p;
+    public synchronized void setPosition(Position p){
+        currentPosition.setX(p.getX());
+        currentPosition.setY(p.getY());
     }
 
-    public void aboutFace(){
+    public synchronized void aboutFace(){
         switch(facing){
             case(Constants.FACING_NORTH) :
                 facing = Constants.FACING_SOUTH;
@@ -150,7 +151,7 @@ public abstract class Entity implements Serializable{
         }
     }
 
-    public void move() {
+    public synchronized void move() {
         switch(facing){
             case(Constants.FACING_NORTH) :
                 if(currentPosition.getY() + 1 < Constants.BOUNDARY_Y)
@@ -169,16 +170,16 @@ public abstract class Entity implements Serializable{
                     currentPosition.setX( currentPosition.getX() - 1);
                 break;
         }
-        System.out.println("New Entity Position: " + currentPosition.getX() + "," + currentPosition.getY());
+        System.out.println("changing position: " + currentPosition.getX() + "," + currentPosition.getY());
     }
 
-    protected void die(){
+    protected synchronized void die(){
         alive = false;
         for(EntityActionListener x : listeners) x.die(this);
     }
 
     @Override
-    public String toString(){
+    public synchronized String toString(){
         String type;
         if(isPlayer) type = "Player";
         else if(isWall) type = "Wall";

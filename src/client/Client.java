@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -19,6 +20,7 @@ import server.Player;
 import server.Wall;
 import transferable.*;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class Client extends JFrame implements ActionListener, KeyListener {
@@ -38,9 +40,9 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     private Entity[][] board = new Entity[Constants.BOARD_VIEW_WINDOW_SIZE][Constants.BOARD_VIEW_WINDOW_SIZE];
 
 
-    Image scaledBulletIcon = new ImageIcon("bullet.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
-    Image scaledPlayerIcon = new ImageIcon("client.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
-    Image scaledEnemyIcon = new ImageIcon("enemy.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+    Image scaledBulletIcon;
+    Image scaledPlayerIcon;
+    Image scaledEnemyIcon;
 
     public static void main(String args[]) throws IOException, InterruptedException {
         Client myClient = new Client();
@@ -48,13 +50,22 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     }
 
-    public Client() throws IOException {
+    public Client() throws IOException, InterruptedException {
         super("Java Battle Arena");
+
+        URL url = this.getClass().getResource("/client/resources/client.png");
+        Image scaledPlayerIcon = ImageIO.read(url).getScaledInstance(40,40, Image.SCALE_DEFAULT);
+
+        scaledBulletIcon = new ImageIcon("bullet.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+        //scaledPlayerIcon = new ImageIcon("client.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+        scaledEnemyIcon = new ImageIcon("enemy.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+
         while(userName == null || userName.isEmpty() || userName == "")
             userName = JOptionPane.showInputDialog(null, "Enter a Username:", "Input", JOptionPane.INFORMATION_MESSAGE);
         while(providedAddress == null || providedAddress.isEmpty() || providedAddress == "")
             providedAddress = (String) JOptionPane.showInputDialog(null, "Enter the Server's IP:", "Input", JOptionPane.QUESTION_MESSAGE, null, null, "127.0.0.1");
         guiInit();
+        latest = new Update(null);
         currentVolition = new Volition(false,false);
         me = new ClientInformation(userName, new Position(0,0), false);
         upd = new Thread(new ServerListener(this, new Socket(providedAddress, updatePort), me));
@@ -64,6 +75,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
         addKeyListener(this);
+        queue();
     }
 
     public void guiInit(){
@@ -71,7 +83,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         myDisp = new ArenaDisplay();
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setSize(new Dimension(700,700));
+        this.setSize(new Dimension(600,600));
         this.setBackground(Color.WHITE);
         this.setLocationRelativeTo(null);
         this.setResizable(false);
@@ -80,21 +92,23 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     private void updateVolition() throws IOException {
-        //Use to update server of a new Volition
-        outputStream.writeObject(currentVolition);
-        System.out.println("Wrote object");
+        synchronized (currentVolition) {
+            //Use to update server of a new Volition
+            outputStream.reset();
+            outputStream.writeObject(currentVolition);
+            System.out.println("Wrote object " + currentVolition.toString());
+        }
     }
 
     private void queue() throws InterruptedException {
-        while(latest == null){
             renderQueue();
-            TimeUnit.SECONDS.sleep(1);
-        }
     }
 
     public void getServerUpdate(Update u){
         //Called by ServerListener, not intended for other use.
-        this.latest = u;
+        synchronized (latest) {
+            this.latest = u;
+        }
         System.out.println("New Position: [" + u.getPlayer().currentPosition.getX() + "," + u.getPlayer().currentPosition.getY() + "]");
         this.repaint();
         this.revalidate();
@@ -162,26 +176,35 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     public void keyPressed(KeyEvent event) { //https://docs.oracle.com/javase/tutorial/uiswing/events/keylistener.html
-
-        if (event.getKeyCode() == KeyEvent.VK_UP) {
-            modVolitionDirectional(Constants.FACING_NORTH);
-        } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
-            modVolitionDirectional(Constants.FACING_SOUTH);
-        } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
-            modVolitionDirectional(Constants.FACING_WEST);
-        } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
-            modVolitionDirectional(Constants.FACING_EAST);
-        } else if(event.getKeyCode() == KeyEvent.VK_SPACE){
-            currentVolition.setFacingVolition(false);
-            currentVolition.setMovementVolition(false);
-            currentVolition.setShootingVolition(true);
+        if(latest.getEntities() == null){
+            try {
+                queue();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            System.out.println("Updating volition...");
-            updateVolition();
-        } catch (IOException e) {
-            System.err.print("Volition not sent properly");
-            e.printStackTrace();
+        else {
+
+            if (event.getKeyCode() == KeyEvent.VK_UP) {
+                modVolitionDirectional(Constants.FACING_NORTH);
+            } else if (event.getKeyCode() == KeyEvent.VK_DOWN) {
+                modVolitionDirectional(Constants.FACING_SOUTH);
+            } else if (event.getKeyCode() == KeyEvent.VK_LEFT) {
+                modVolitionDirectional(Constants.FACING_WEST);
+            } else if (event.getKeyCode() == KeyEvent.VK_RIGHT) {
+                modVolitionDirectional(Constants.FACING_EAST);
+            } else if (event.getKeyCode() == KeyEvent.VK_SPACE) {
+                currentVolition.setFacingVolition(false);
+                currentVolition.setMovementVolition(false);
+                currentVolition.setShootingVolition(true);
+            }
+            try {
+                System.out.println("Updating volition...");
+                updateVolition();
+            } catch (IOException e) {
+                System.err.print("Volition not sent properly");
+                e.printStackTrace();
+            }
         }
     }
 
@@ -213,12 +236,12 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-            g.drawString("Waiting for Server...",215,350);
+            g.drawString("Waiting for Server...",175,300);
         }
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(700, 700);
+            return new Dimension(600, 600);
         }
     }
 
@@ -228,8 +251,6 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             renderBoard();
-            //g.setFont(new Font("Helvetica", Font.PLAIN, 30));
-            //g.drawString("Got an Update!",215,350);
 
             int yOffset = 0;
             for(Entity[] row : board){//Each Row
@@ -246,11 +267,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                     }
                     if(space.equals(latest.getPlayer())){
-                        g.drawImage(scaledPlayerIcon, xOffset, yOffset, this);
+                        g.drawImage(scaledPlayerIcon, xOffset, yOffset, null);
                     } else if(space.isPlayer()){
-                        g.drawImage(scaledEnemyIcon, xOffset, yOffset, this);
+                        g.drawImage(scaledEnemyIcon, xOffset, yOffset, null);
                     } else {
-                        g.drawImage(scaledBulletIcon, xOffset, yOffset, this);
+                        g.drawImage(scaledBulletIcon, xOffset, yOffset, null);
                     }
                     xOffset += Constants.SQUARE_DIM;
                 }
@@ -260,7 +281,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
         @Override
         public Dimension getPreferredSize() {
-            return new Dimension(700, 700);
+            return new Dimension(600, 600);
         }
     }
 }

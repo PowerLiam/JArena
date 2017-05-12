@@ -76,7 +76,8 @@ public class Server implements Runnable{
     }
 
     private void assignStartingPosition(Player next){ //For now, starting position is random.
-        next.currentPosition = new Position((int) (Math.random() * 201), (int) (Math.random() * 201));
+        next.currentPosition.setX((int) (Math.random() * 201));
+        next.currentPosition.setY((int) (Math.random() * 201));
     }
 
     public void addListener(ServerListener s){

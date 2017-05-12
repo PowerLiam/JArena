@@ -53,4 +53,9 @@ public class Volition implements Serializable{
     public synchronized void setFacingVolition(int facingVolition) {
         this.facingVolition = facingVolition;
     }
+
+    @Override
+    public synchronized String toString(){
+        return "V[ " + this.getFacingVolition() + " Move: " + this.isMovementVolition() + " Face: " + this.isFacingVolition() + " Shoot: " + this.isShootingVolition() + "]";
+    }
 }

@@ -166,4 +166,13 @@ public abstract class Entity implements Serializable{
         alive = false;
         for(EntityActionListener x : listeners) x.die(this);
     }
+
+    @Override
+    public String toString(){
+        String type;
+        if(isPlayer) type = "Player";
+        else if(isWall) type = "Wall";
+        else type = "Bullet";
+        return ("E[ Position: (" + currentPosition.x + "," + currentPosition.y + ") Type: " + type + "]");
+    }
 }

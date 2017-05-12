@@ -120,9 +120,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
 
         for(Entity cur: allEntities){
-            if(cur.getPosition().x > topLeft.x && cur.getPosition().x < botRight.x){
-                if(cur.getPosition().y > topLeft.y && cur.getPosition().y < botRight.y){
+            System.out.println("OUTSIDE: " + cur.toString());
+            if(cur.getPosition().x >= topLeft.x && cur.getPosition().x <= botRight.x){
+                if(cur.getPosition().y >= topLeft.y && cur.getPosition().y <= botRight.y){
                     board[cur.getPosition().x - topLeft.x][cur.getPosition().y - topLeft.y] = cur;
+                    System.out.print("INSIDE: " + cur.toString());
                 }
             }
         }
@@ -133,12 +135,13 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         //Loops through every space that I will render
         for(int y = topLeft.y; y < botRight.y; y++){
             for(int x = topLeft.x; x < botRight.x; x++){
-                System.out.print("x: " + x + "  y: " + y);
+                System.out.print("      [x: " + x + "  y: " + y + "]");
                 if(x < 0 || y < 0){
                     board[x][y] = new Wall();
                 }
             }
         }
+        System.out.println();
     }
 
 
@@ -223,7 +226,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             int yOffset = 0;
             for(Entity[] row : board){//Each Row
                 for(Entity space : row){ //Each Square
-                    if(space.equals(null)){
+                    if(space == null){
                         g.setColor(Color.lightGray);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                         break;

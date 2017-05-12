@@ -61,7 +61,7 @@ public class ClientListener implements Comparable<ClientListener>{
         }
     }
 
-    public Player getMyPlayer(){
+    public synchronized Player getMyPlayer(){
         return myPlayer;
     }
 

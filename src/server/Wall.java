@@ -7,6 +7,7 @@ public class Wall extends Entity {
 
     public Wall(){
        isWall = true;
+       isPlayer = false;
     }
 
 

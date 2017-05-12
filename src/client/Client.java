@@ -120,11 +120,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
 
         for(Entity cur: allEntities){
-            System.out.println("OUTSIDE: " + cur.toString());
+            //System.out.println("OUTSIDE: " + cur.toString());
             if(cur.getPosition().x >= topLeft.x && cur.getPosition().x <= botRight.x){
                 if(cur.getPosition().y >= topLeft.y && cur.getPosition().y <= botRight.y){
                     board[cur.getPosition().x - topLeft.x][cur.getPosition().y - topLeft.y] = cur;
-                    System.out.print("INSIDE: " + cur.toString());
+                    System.out.println("INSIDE: " + cur.toString() + (cur.getPosition().x - topLeft.x) + "   " + (cur.getPosition().y - topLeft.y));
                 }
             }
         }
@@ -133,13 +133,18 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
 
         //Loops through every space that I will render
+        int realx = 0;
+        int realy = 0;
         for(int y = topLeft.y; y < botRight.y; y++){
             for(int x = topLeft.x; x < botRight.x; x++){
                 System.out.print("      [x: " + x + "  y: " + y + "]");
                 if(x < 0 || y < 0){
-                    board[x][y] = new Wall();
+                    board[realx][realy] = new Wall();
+                    System.out.println("adding wall at " + x + " " + y + "    really " + realx + " " + realy);
                 }
+                realx++;
             }
+            realy++;
         }
         System.out.println();
     }
@@ -222,24 +227,32 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             renderBoard();
             //g.setFont(new Font("Helvetica", Font.PLAIN, 30));
             //g.drawString("Got an Update!",215,350);
-            int xOffset = 0;
+
             int yOffset = 0;
             for(Entity[] row : board){//Each Row
+                int xOffset = 0;
                 for(Entity space : row){ //Each Square
+                    System.out.print("OFFSETS: X " + xOffset + "  Y " + yOffset + "      :");
                     if(space == null){
+                        System.out.println("empty");
                         g.setColor(Color.lightGray);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
-                        break;
+                        xOffset += Constants.SQUARE_DIM;
+                        continue;
                     }
                     if(space.isWall) {
+                        System.out.println("wall");
                         g.setColor(Color.DARK_GRAY);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                     }
                     if(space.equals(latest.getPlayer())){
+                        System.out.println("me");
                         g.drawImage(scaledPlayerIcon, xOffset, yOffset, this);
                     } else if(space.isPlayer){
+                        System.out.println("enemy");
                         g.drawImage(scaledEnemyIcon, xOffset, yOffset, this);
                     } else {
+                        System.out.println("bullet");
                         g.drawImage(scaledBulletIcon, xOffset, yOffset, this);
                     }
                     xOffset += Constants.SQUARE_DIM;

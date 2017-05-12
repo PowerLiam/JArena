@@ -37,6 +37,7 @@ public class ServerListener implements Runnable {
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }
+                runner.loseConnection();
                 break;
             }
             catch (IOException | ClassNotFoundException e) {

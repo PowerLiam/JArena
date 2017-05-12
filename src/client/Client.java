@@ -21,7 +21,8 @@ import transferable.*;
 import javax.swing.*;
 
 public class Client extends JFrame implements ActionListener, KeyListener {
-    private String host = "127.0.0.1"; //TODO: Prompt for Host
+    private String providedAddress;
+    private String userName;
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
     private Socket volitionSocket;
@@ -42,13 +43,17 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     public Client() throws IOException {
-        super();
+        super("Java Battle Arena");
+        while(userName == null || userName.isEmpty() || userName == "")
+            userName = JOptionPane.showInputDialog(null, "Enter a Username:", "Input", JOptionPane.INFORMATION_MESSAGE);
+        while(providedAddress == null || providedAddress.isEmpty() || providedAddress == "")
+            providedAddress = (String) JOptionPane.showInputDialog(null, "Enter the Server's IP:", "Input", JOptionPane.QUESTION_MESSAGE, null, null, "127.0.0.1");
         guiInit();
         currentVolition = new Volition(false,false);
-        me = new ClientInformation("Test Client", new Position(0,0), false); //TODO: Prompt for Name
-        upd = new Thread(new ServerListener(this, new Socket(host, updatePort), me));
+        me = new ClientInformation(userName, new Position(0,0), false);
+        upd = new Thread(new ServerListener(this, new Socket(providedAddress, updatePort), me));
         upd.start();
-        this.volitionSocket = new Socket(host, volitionPort);
+        this.volitionSocket = new Socket(providedAddress, volitionPort);
         this.outputStream = new ObjectOutputStream(volitionSocket.getOutputStream());
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
@@ -81,6 +86,12 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         //Called by ServerListener, not intended for other use.
         this.latest = u;
         //TODO: Trigger a re-render here, since the server resent its entities
+    }
+
+    public void loseConnection() throws InterruptedException {
+        //Called by ServerListener, not intended for other use.
+        TimeUnit.SECONDS.sleep(5);
+        System.exit(-1);
     }
 
     public void renderQueue(){

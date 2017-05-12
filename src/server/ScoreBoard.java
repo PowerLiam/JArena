@@ -11,6 +11,7 @@ public class ScoreBoard extends JFrame implements ServerListener{
     JButton stateChanger;
     JScrollPane scrollPane;
     JTable leaderBoard;
+    JLabel state;
     Server myServer;
     Thread runningServer;
 
@@ -19,24 +20,30 @@ public class ScoreBoard extends JFrame implements ServerListener{
     }
 
     public ScoreBoard() throws IOException {
-        super("Game Leader Board");
+        super("Server LeaderBoard");
         setContentPane(monitor);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(new Dimension(700,500));
         setVisible(true);
+        state.setText("Initializing");
 
         myServer = new Server();
         myServer.addListener(this);
         runningServer = new Thread(myServer);
         runningServer.start();
-
+        state.setText("Queueing");
 
         stateChanger.addActionListener(e -> {
             myServer.isQueueing = false;
             stateChanger.setText("End Game");
+            state.setText("Cycling");
             stateChanger.removeActionListener(stateChanger.getActionListeners()[0]);
             stateChanger.addActionListener(f -> {
+                stateChanger.setText("\\(^-^)/");
+                state.setText("Results");
                 myServer.run = false;
+                stateChanger.removeActionListener(stateChanger.getActionListeners()[0]);
+                stateChanger.addActionListener(g -> System.exit(0));
             });
         });
     }
@@ -62,9 +69,21 @@ public class ScoreBoard extends JFrame implements ServerListener{
         Object[][] data = new Object[myServer.allClients.size()][2];
         Collections.sort(myServer.allClients);
         for(int i = 0; i < myServer.allClients.size(); i++){
-            leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id, i, 0);
+            if(myServer.allClients.get(i).getMyPlayer().alive)
+                leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id, i, 0);
+            else
+                leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id + "   (Dead)", i, 0);
             leaderBoard.setValueAt(myServer.allClients.get(i).clientInformation.getName(), i, 1);
             leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().numberOfKills, i, 2);
         }
+    }
+
+    @Override
+    public void endGame() {
+        stateChanger.setText("\\(^-^)/");
+        state.setText("Results");
+        myServer.run = false;
+        stateChanger.removeActionListener(stateChanger.getActionListeners()[0]);
+        stateChanger.addActionListener(g -> System.exit(0));
     }
 }

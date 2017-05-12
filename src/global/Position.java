@@ -16,4 +16,8 @@ public class Position implements Serializable{
         }
         return false;
     }
+
+    public boolean checkBoundaries(){
+        return !(x > Constants.BOUNDARY_X || y > Constants.BOUNDARY_Y || x < 0 || y < 0);
+    }
 }

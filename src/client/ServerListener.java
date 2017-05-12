@@ -29,6 +29,7 @@ public class ServerListener implements Runnable {
         while(true){
             try {
                 Update toNotify = (Update) inputStream.readObject();
+                System.out.println("Got an update!");
                 runner.getServerUpdate(toNotify);
             } catch(SocketException e){
                 System.err.println("Lost connection to server.");
@@ -39,7 +40,6 @@ public class ServerListener implements Runnable {
                 }
                 break;
             }
-
             catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }

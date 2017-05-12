@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 import global.Constants;
 import global.Position;
@@ -34,7 +35,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     private JPanel canvas;
 
-    public static void main(String args[]) throws IOException {
+    public static void main(String args[]) throws IOException, InterruptedException {
         Client myClient = new Client();
         myClient.queue();
         myClient.renderBoard();
@@ -74,9 +75,10 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         }
     }
 
-    private void queue(){
-        while(latest == null){
+    private void queue() throws InterruptedException {
+        while(latest == null){ //TODO: Resource intensive?
             renderQueue();
+            TimeUnit.SECONDS.sleep(1);
         }
     }
 
@@ -99,7 +101,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         ArrayList<Entity> allEntities = latest.getEntities();
         Player me = latest.getPlayer();
         Position myPos = me.getPosition();
-        Position topLeft = new Position(myPos.x - 7, myPos.y - 7);
+        Position topLeft = new Position(myPos.x - 7, myPos.y - 7); //TODO: This could be negative!
         Position botRight = new Position(myPos.x + 7, myPos.y + 7);
 
 
@@ -107,7 +109,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         for(Entity cur: allEntities){
             if(cur.getPosition().x > topLeft.x && cur.getPosition().x < botRight.x){
                 if(cur.getPosition().y > topLeft.y && cur.getPosition().y < botRight.y){
-                    board[topLeft.x + cur.getPosition().x][topLeft.y + cur.getPosition().y] = cur;
+                    board[topLeft.x + cur.getPosition().x][topLeft.y + cur.getPosition().y] = cur; //TODO: Throwing ArrayIndexOutOfBounds!
                 }
             }
         }

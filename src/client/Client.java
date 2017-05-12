@@ -99,7 +99,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     public void loseConnection() throws InterruptedException {
         //Called by ServerListener, not intended for other use.
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(5);
         System.exit(-1);
     }
 
@@ -129,10 +129,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
 
 
+
         //Loops through every space that I will render
-        for(int y = topLeft.y; y > botRight.y; y--){
-            for(int x = topLeft.x; x > botRight.x; x++){
-                Entity current;
+        for(int y = topLeft.y; y < botRight.y; y++){
+            for(int x = topLeft.x; x < botRight.x; x++){
+                System.out.print("x: " + x + "  y: " + y);
                 if(x < 0 || y < 0){
                     board[x][y] = new Wall();
                 }
@@ -216,11 +217,13 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             renderBoard();
+            //g.setFont(new Font("Helvetica", Font.PLAIN, 30));
+            //g.drawString("Got an Update!",215,350);
             int xOffset = 0;
             int yOffset = 0;
             for(Entity[] row : board){//Each Row
                 for(Entity space : row){ //Each Square
-                    if(space == null){
+                    if(space.equals(null)){
                         g.setColor(Color.lightGray);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                         break;

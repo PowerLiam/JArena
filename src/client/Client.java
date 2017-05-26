@@ -70,6 +70,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.outputStream = new ObjectOutputStream(volitionSocket.getOutputStream());
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
+
         addKeyListener(this);
         renderQueue();
     }
@@ -230,12 +231,33 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
+            boolean gridColor = true;
+            Color rgbGridColor = new Color(120, 120, 120);
+            boolean onOddSquare = false;
+
+            //Essentially determines what color to start the whole rendering process on, xor statement defines a grid.
+            if(board[7][7] == null) {
+                onOddSquare = false;
+            } else{
+                Position myPos = board[7][7].getPosition();
+                if (myPos.getX() % 2 == 0 ^ myPos.getY() % 2 == 0) onOddSquare = true;
+            }
+
             renderBoard();
             int xOffset = 0;
             for(Entity[] row : board){//Each Row
                 int yOffset = 0;
                 for(int i = row.length - 1; i >=0; i--){//Each Square
-                    g.setColor(Color.lightGray);
+
+                        if(onOddSquare) {
+                            g.setColor(Color.lightGray);
+                            onOddSquare = false;
+                        }
+                        else if(!onOddSquare) {
+                            g.setColor(rgbGridColor);
+                            onOddSquare = true;
+                        }
+
                     g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                     if(row[i] == null){
                         yOffset += Constants.SQUARE_DIM;

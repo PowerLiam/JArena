@@ -37,6 +37,9 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     private Volition currentVolition;
     ArenaDisplay arenaDisplay;
     QueueDisplay queueDisplay;
+    GameEndDisplay gameEndDisplay;
+    String endGameString;
+    int endGameInt;
     private Entity[][] board = new Entity[Constants.BOARD_VIEW_WINDOW_SIZE][Constants.BOARD_VIEW_WINDOW_SIZE];
 
 
@@ -105,13 +108,18 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             this.revalidate();
         }
         else{
-            //TODO: Display u.winningPlayer + u.winningPlayerKills here.
+            this.remove(arenaDisplay);
+            gameEndDisplay = new GameEndDisplay();
+            endGameString = (u.getWinningPlayer() + " won!");
+            endGameInt = u.getWinningPlayerKills();
+            this.add(gameEndDisplay);
+            this.pack();
         }
     }
 
     public void loseConnection() throws InterruptedException {
         //Called by ServerListener, not intended for other use.
-        TimeUnit.SECONDS.sleep(3);
+        TimeUnit.SECONDS.sleep(7);
         System.exit(-1);
     }
 
@@ -143,13 +151,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         for(int y = topLeft.getY(); y <= botRight.getY(); y++){
             renderedX = 0;
             for(int x = topLeft.getX(); x <= botRight.getX(); x++){
-                System.out.println(Constants.BOUNDARY_X);
-                if(x > Constants.BOUNDARY_X) System.out.println("X outside bounds     X = " + x + " Bound = " + Constants.BOUNDARY_X);
-
                 if(x < 0 || y < 0 || x > Constants.BOUNDARY_X || y > Constants.BOUNDARY_Y){
-
                     board[renderedX][renderedY] = new Wall();
-                    System.out.println("Board at:   X - " + renderedX + " Y - " + renderedY);
                 }
                 renderedX++;
             }
@@ -231,6 +234,22 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         }
     }
 
+    class GameEndDisplay extends JPanel {
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            super.paintComponent(g);
+            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            g.drawString(endGameString,225,300);
+            g.drawString((endGameInt + " kills."), 265, 450);
+        }
+
+        @Override
+        public Dimension getPreferredSize() {
+            return new Dimension(600, 600);
+        }
+    }
+
     class ArenaDisplay extends JPanel {
 
         @Override
@@ -238,7 +257,6 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             super.paintComponent(g);
             boolean gridColor = true;
             Color rgbGridColor = new Color(184, 184, 184);
-
             boolean onOddSquare = false;
 
             //Essentially determines what color to start the whole rendering process on, xor statement defines a grid.

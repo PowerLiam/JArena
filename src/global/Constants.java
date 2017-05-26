@@ -14,4 +14,5 @@ public class Constants {
 
     public static final int BOARD_VIEW_WINDOW_SIZE = 15;
     public static final int SQUARE_DIM = 40;
+    
 }

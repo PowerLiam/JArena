@@ -1,5 +1,7 @@
 package transferable;
 
+import java.io.Serializable;
+
 /**
  * A component of JArena
  *
@@ -7,7 +9,7 @@ package transferable;
  * @version 0.1.0
  * @since 5/26/2017 12:57 PM
  */
-public class ServerInformation {
+public class ServerInformation implements Serializable{
 
     public ServerInformation(int BOUNDARY_X, int BOUNDARY_Y) {
         this.BOUNDARY_X = BOUNDARY_X;

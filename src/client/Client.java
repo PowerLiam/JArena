@@ -143,8 +143,13 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         for(int y = topLeft.getY(); y <= botRight.getY(); y++){
             renderedX = 0;
             for(int x = topLeft.getX(); x <= botRight.getX(); x++){
+                System.out.println(Constants.BOUNDARY_X);
+                if(x > Constants.BOUNDARY_X) System.out.println("X outside bounds     X = " + x + " Bound = " + Constants.BOUNDARY_X);
+
                 if(x < 0 || y < 0 || x > Constants.BOUNDARY_X || y > Constants.BOUNDARY_Y){
+
                     board[renderedX][renderedY] = new Wall();
+                    System.out.println("Board at:   X - " + renderedX + " Y - " + renderedY);
                 }
                 renderedX++;
             }
@@ -232,7 +237,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             boolean gridColor = true;
-            Color rgbGridColor = new Color(120, 120, 120);
+            Color rgbGridColor = new Color(184, 184, 184);
+
             boolean onOddSquare = false;
 
             //Essentially determines what color to start the whole rendering process on, xor statement defines a grid.
@@ -250,8 +256,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
                 for(int i = row.length - 1; i >=0; i--){//Each Square
 
                         if(onOddSquare) {
-                            g.setColor(Color.lightGray);
-                            onOddSquare = false;
+                           g.setColor(Color.lightGray);
+                             onOddSquare = false;
                         }
                         else if(!onOddSquare) {
                             g.setColor(rgbGridColor);

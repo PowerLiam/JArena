@@ -45,8 +45,12 @@ public class Server implements Runnable{
                     ClientInformation pendingInfo = (ClientInformation) pendingInputStream.readObject();
                     Socket volitioner = volition.accept();
                     ClientListener pending = new ClientListener(pendingInputStream, pendingOutputStream, volitioner, myGame, pendingInfo);
-                    assignStartingPosition(pending.getMyPlayer());
                     allClients.add(pending);
+                    //Dynamically change arena size based on number of connected clients
+                    int numConnected = allClients.size();
+                    Constants.BOUNDARY_X = numConnected * 35;
+                    Constants.BOUNDARY_Y = numConnected * 35;
+
                     System.out.println("Added Player: " + pendingInfo.getName() + " ID " + pending.getMyPlayer().id);
                     updateScoreBoard();
                 }
@@ -59,6 +63,12 @@ public class Server implements Runnable{
                 e.printStackTrace();
             }
         }
+
+        for(ClientListener cur : allClients){
+            assignStartingPosition(cur.getMyPlayer());
+        }
+
+
         while(myGame.players.size() > 1 && run){
             boolean gameEnded = myGame.cycle();
             updateScoreBoard();

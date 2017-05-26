@@ -127,7 +127,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         Position myPos = me.getPosition();
         System.out.println("Position: " + myPos.getX() + "," + myPos.getY());
         Position topLeft = new Position(myPos.getX() - 7, myPos.getY() - 7);
-        Position botRight = new Position(myPos.getX() + 8, myPos.getY() + 8);
+        Position botRight = new Position(myPos.getX() + 7, myPos.getY() + 7);
 
         for(Entity entity: allEntities){
             if(entity.getPosition().getX() >= topLeft.getX() && entity.getPosition().getX() <= botRight.getX()){
@@ -139,9 +139,9 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
         int renderedX;
         int renderedY = 0;
-        for(int y = topLeft.getY(); y < botRight.getY(); y++){
+        for(int y = topLeft.getY(); y <= botRight.getY(); y++){
             renderedX = 0;
-            for(int x = topLeft.getX(); x < botRight.getX(); x++){
+            for(int x = topLeft.getX(); x <= botRight.getX(); x++){
                 if(x < 0 || y < 0 || x > Constants.BOUNDARY_X || y > Constants.BOUNDARY_Y){
                     board[renderedX][renderedY] = new Wall();
                 }

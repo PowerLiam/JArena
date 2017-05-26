@@ -138,7 +138,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         } else {
             this.remove(arenaDisplay);
             gameEndDisplay = new GameEndDisplay();
-            endGameString = (u.getWinningPlayer() + " won!");
+            endGameString = ("Winner: " + u.getWinningPlayer());
             endGameInt = u.getWinningPlayerKills();
             this.add(gameEndDisplay);
             this.pack();
@@ -293,10 +293,10 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             FontMetrics fm = g2d.getFontMetrics();
             int x = ((getWidth() - fm.stringWidth(endGameString)) / 2);
             int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
-            g2d.drawString(endGameString, x, y);
+            g2d.drawString(endGameString, x, (y - fm.getHeight() / 2));
 
-            x = ((getWidth() - fm.stringWidth(endGameInt + " kills.")) / 2);
-            g2d.drawString(endGameInt + " kills.", x, y + fm.getHeight() + fm.getDescent());
+            x = ((getWidth() - fm.stringWidth(endGameInt + " kills")) / 2);
+            g2d.drawString(endGameInt + " kills", x, y + (fm.getHeight() / 2) + fm.getDescent());
             g2d.dispose();
         }
 

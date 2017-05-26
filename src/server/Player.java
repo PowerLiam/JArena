@@ -79,7 +79,7 @@ public class Player extends Entity implements KillListener, Serializable{
                 }
                 break;
         }
-        if(!(bulletPosX == 0 || bulletPosY == 0)) {
+        if(!(bulletPosX == -1 || bulletPosY == -1)) {
             Position bulletPosition = new Position(bulletPosX, bulletPosY);
             Bullet toShoot = new Bullet(this, bulletPosition, facing);
             toShoot.addKillListener(this);

@@ -2,6 +2,7 @@ package server;
 import global.Constants;
 import global.Position;
 import transferable.ClientInformation;
+import transferable.ServerInformation;
 import transferable.Update;
 
 import javax.swing.*;
@@ -66,6 +67,11 @@ public class Server implements Runnable{
 
         for(ClientListener cur : allClients){
             assignStartingPosition(cur.getMyPlayer());
+            try {
+                cur.sendServerInfo(new ServerInformation(Constants.BOUNDARY_X, Constants.BOUNDARY_Y));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
 

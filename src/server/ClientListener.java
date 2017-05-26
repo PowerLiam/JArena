@@ -43,6 +43,10 @@ public class ClientListener implements Comparable<ClientListener>{
         }
     }
 
+    public void sendServerInfo(ServerInformation s) throws IOException {
+        updateOutputStream.writeObject(s);
+    }
+
     public void sendClientUpdate(Update u){
         synchronized (myPlayer) {
             try {

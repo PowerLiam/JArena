@@ -24,11 +24,18 @@ public class ServerListener implements Runnable {
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(socket.getInputStream());
         outputStream.writeObject(info);
-        runner.getServerInformation((ServerInformation)inputStream.readObject());
+
     }
 
     @Override
     public void run() {
+        try {
+            runner.getServerInformation((ServerInformation)inputStream.readObject());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
         while(true){
             try {
                 Update toNotify = (Update) inputStream.readObject();

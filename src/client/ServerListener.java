@@ -5,10 +5,11 @@ import transferable.Update;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class ServerListener implements Runnable {
+public class ServerListener implements Runnable, Serializable {
     private Socket socket;
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;

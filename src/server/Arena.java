@@ -126,7 +126,11 @@ public class Arena implements EntityActionListener, Serializable{
                         pcount++;
                     }
                 }
-                if(pcount > 1) { //This checks if there was more than one entity in that position
+                if(pcount > 1) {
+                    //This checks if there was more than one entity in that position
+                    if(inCurSquare.get(0).getFacing() == inCurSquare.get(1).getFacing()){
+                        inCurSquare.get(0).aboutFace();
+                    }
                     for(Player p : inCurSquare){  //Bounce the players
                         p.aboutFace();
                         p.move();

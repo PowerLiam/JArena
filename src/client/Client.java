@@ -42,18 +42,20 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     int endGameInt;
     private Entity[][] board = new Entity[Constants.BOARD_VIEW_WINDOW_SIZE][Constants.BOARD_VIEW_WINDOW_SIZE];
 
+    int BOUNDARY_X;
+    int BOUNDARY_Y;
 
     BufferedImage bullet;
     BufferedImage player;
     BufferedImage enemy;
 
-    public static void main(String args[]) throws IOException, InterruptedException {
+    public static void main(String args[]) throws IOException, InterruptedException, ClassNotFoundException {
         Client myClient = new Client();
         myClient.renderQueue();
 
     }
 
-    public Client() throws IOException, InterruptedException{
+    public Client() throws IOException, InterruptedException, ClassNotFoundException {
         super("Java Battle Arena");
         bullet = resizeBufferedImage(ImageIO.read(Client.class.getResourceAsStream("resources/bullet.png")), 40, 40);
         player = resizeBufferedImage(ImageIO.read(Client.class.getResourceAsStream("resources/client.png")), 40, 40);
@@ -96,6 +98,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             outputStream.reset();
             outputStream.writeObject(currentVolition);
         }
+    }
+
+    public void getServerInformation(ServerInformation s){
+        this.BOUNDARY_X = s.getBOUNDARY_X();
+        this.BOUNDARY_Y = s.getBOUNDARY_Y();
     }
 
     public void getServerUpdate(Update u){
@@ -151,7 +158,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         for(int y = topLeft.getY(); y <= botRight.getY(); y++){
             renderedX = 0;
             for(int x = topLeft.getX(); x <= botRight.getX(); x++){
-                if(x < 0 || y < 0 || x > Constants.BOUNDARY_X || y > Constants.BOUNDARY_Y){
+                if(x < 0 || y < 0 || x > BOUNDARY_X || y > BOUNDARY_Y){
                     board[renderedX][renderedY] = new Wall();
                 }
                 renderedX++;

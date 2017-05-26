@@ -1,5 +1,6 @@
 package client;
 import transferable.ClientInformation;
+import transferable.ServerInformation;
 import transferable.Update;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -15,7 +16,7 @@ public class ServerListener implements Runnable {
     private Client runner;
     private boolean receivedFirstUpdate = false;
 
-    public ServerListener(Client runner, Socket socket, ClientInformation info) throws IOException {
+    public ServerListener(Client runner, Socket socket, ClientInformation info) throws IOException, ClassNotFoundException {
         this.runner = runner;
         this.info = info;
         this.socket = socket;
@@ -23,6 +24,7 @@ public class ServerListener implements Runnable {
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(socket.getInputStream());
         outputStream.writeObject(info);
+        runner.getServerInformation((ServerInformation)inputStream.readObject());
     }
 
     @Override

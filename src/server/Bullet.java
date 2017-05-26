@@ -8,6 +8,7 @@ import java.util.ArrayList;
 public class Bullet extends Entity implements KillListener, Serializable{
     private Player firedBy;
     private ArrayList<KillListener> killListeners = new ArrayList<>();
+    private boolean willDieNextCycle = false;
 
     public Bullet(Player firedBy, Position currentPosition, int facing, int health) {
         if (currentPosition.getX() <= 0 || currentPosition.getY() <= 0)
@@ -62,7 +63,10 @@ public class Bullet extends Entity implements KillListener, Serializable{
                 || (currentPosition.getY() == Constants.BOUNDARY_Y  && this.getFacing() == Constants.FACING_NORTH)
                 || (currentPosition.getX() == 0 && this.getFacing() == Constants.FACING_WEST)
                 || (currentPosition.getY() == 0 && this.getFacing() == Constants.FACING_SOUTH)){
-            die();
+            if(willDieNextCycle) {
+                die();
+            }
+            else willDieNextCycle = true;
         }
     }
 

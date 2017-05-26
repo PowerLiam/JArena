@@ -51,7 +51,8 @@ public class ScoreBoard extends JFrame implements ServerListener{
     }
 
     public void updateScoreBoard() {
-        if(Math.abs(System.currentTimeMillis() - lastUpdatedTime) >= 1000) {
+        SwingUtilities.invokeLater(() -> {
+            //This code reconstructs the JTable every time it is updated.. couldn't find a good way to change only individual cells.
             DefaultTableModel model = new DefaultTableModel(myServer.allClients.size(), 3) {
                 @Override
                 public boolean isCellEditable(int row, int column) {
@@ -74,7 +75,10 @@ public class ScoreBoard extends JFrame implements ServerListener{
             leaderBoard.setModel(model);
             Object[][] data = new Object[myServer.allClients.size()][2];
             Collections.sort(myServer.allClients);
-            for (int i = 0; i < myServer.allClients.size(); i++) {
+            for (
+                    int i = 0; i < myServer.allClients.size(); i++)
+
+            {
                 if (myServer.allClients.get(i).getMyPlayer().alive)
                     leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id, i, 0);
                 else
@@ -82,8 +86,9 @@ public class ScoreBoard extends JFrame implements ServerListener{
                 leaderBoard.setValueAt(myServer.allClients.get(i).clientInformation.getName(), i, 1);
                 leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().numberOfKills, i, 2);
             }
+
             lastUpdatedTime = System.currentTimeMillis();
-        }
+        });
     }
 
     @Override

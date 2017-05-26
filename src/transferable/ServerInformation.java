@@ -1,14 +1,5 @@
 package transferable;
-
 import java.io.Serializable;
-
-/**
- * A component of JArena
- *
- * @author Jordan Blackadar <"jordan.blackadar@outlook.com">
- * @version 0.1.0
- * @since 5/26/2017 12:57 PM
- */
 public class ServerInformation implements Serializable{
 
     public ServerInformation(int BOUNDARY_X, int BOUNDARY_Y) {

@@ -6,8 +6,8 @@ public class Constants {
     public static final int FACING_EAST = 3;
     public static final int FACING_WEST = 4;
 
-    public static int BOUNDARY_X = 70;
-    public static int BOUNDARY_Y = 70;
+    public static int BOUNDARY_X ;
+    public static int BOUNDARY_Y ;
 
     public static final int UPDATE_PORT = 9091;
     public static final int VOLITION_PORT = 9092;

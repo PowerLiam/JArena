@@ -1,6 +1,5 @@
 package server;
 import global.Constants;
-import global.Position;
 import transferable.ClientInformation;
 import transferable.ServerInformation;
 import transferable.Update;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 
 public class Server implements Runnable{
     Arena myGame;
+    int spacePerPlayer = 25;
     private ServerSocket update, volition;
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
@@ -49,8 +49,8 @@ public class Server implements Runnable{
                     allClients.add(pending);
                     //Dynamically change arena size based on number of connected clients
                     int numConnected = allClients.size();
-                    Constants.BOUNDARY_X = numConnected * 35;
-                    Constants.BOUNDARY_Y = numConnected * 35;
+                    Constants.BOUNDARY_X = numConnected * spacePerPlayer;
+                    Constants.BOUNDARY_Y = numConnected * spacePerPlayer;
 
                     System.out.println("Added Player: " + pendingInfo.getName() + " ID " + pending.getMyPlayer().id);
                     updateScoreBoard();
@@ -81,6 +81,16 @@ public class Server implements Runnable{
             if(gameEnded) run = false;
         }
         for(ServerListener s : listeners) s.endGame();
+        if(myGame.players.size() == 0){
+            updateAllClientListeners(new Update(true, "Nobody", 0));
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            updateScoreBoard();
+            JOptionPane.showMessageDialog(null, "The game ended in a tie.");
+        }
         updateAllClientListeners(new Update(true, myGame.players.get(0).myInfo.getName(), myGame.players.get(0).numberOfKills));
         if(myGame.players.size() > 0) {
             try {

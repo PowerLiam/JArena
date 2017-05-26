@@ -230,9 +230,15 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
         @Override
         protected void paintComponent(Graphics g) {
+            String waiting = "Waiting for Server...";
+            Graphics2D g2d = (Graphics2D) g.create();
             super.paintComponent(g);
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-            g.drawString("Waiting for Server...",175,300);
+            g2d.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            FontMetrics fm = g2d.getFontMetrics();
+            int x = ((getWidth() - fm.stringWidth(waiting)) / 2);
+            int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+            g2d.drawString(waiting,x,y);
+            g2d.dispose();
         }
 
         @Override
@@ -245,10 +251,17 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
         @Override
         protected void paintComponent(Graphics g) {
+            Graphics2D g2d = (Graphics2D) g.create();
             super.paintComponent(g);
-            g.setFont(new Font("TimesRoman", Font.PLAIN, 30));
-            g.drawString(endGameString,225,300);
-            g.drawString((endGameInt + " kills."), 265, 450);
+            g2d.setFont(new Font("TimesRoman", Font.PLAIN, 30));
+            FontMetrics fm = g2d.getFontMetrics();
+            int x = ((getWidth() - fm.stringWidth(endGameString)) / 2);
+            int y = ((getHeight() - fm.getHeight()) / 2) + fm.getAscent();
+            g2d.drawString(endGameString,x,y);
+
+            x = ((getWidth() - fm.stringWidth(endGameInt + " kills.")) / 2);
+            g2d.drawString(endGameInt + " kills.", x, y + fm.getHeight() + fm.getDescent());
+            g2d.dispose();
         }
 
         @Override

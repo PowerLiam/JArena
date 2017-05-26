@@ -42,8 +42,8 @@ public class Bullet extends Entity implements KillListener, Serializable{
     }
 
     public Bullet(Player firedBy, Position currentPosition, int facing) {
-        if (currentPosition.getX() <= 0 || currentPosition.getY() <= 0)
-            throw new IllegalArgumentException("Position must be positive.");
+        if (currentPosition.getX() < 0 || currentPosition.getY() < 0)
+            throw new IllegalArgumentException("Bullet Position cannot be Negative");
         if (health < 0) throw new IllegalArgumentException("Health must be positive and greater than zero.");
         this.firedBy = firedBy;
         this.health = 1;

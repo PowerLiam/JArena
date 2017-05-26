@@ -55,9 +55,9 @@ public class Arena implements EntityActionListener, Serializable{
                 refreshSendables();
         }
         double sysNanoTimeEnd = System.currentTimeMillis();
-        if(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 50){
+        if(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 100){
             try {
-                Thread.sleep( 50 - (int)(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
+                Thread.sleep( 100 - (int)(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
             } catch (InterruptedException e) {
                 System.err.println("done waiting");
             }

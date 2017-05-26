@@ -46,7 +46,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     public static void main(String args[]) throws IOException, InterruptedException {
         Client myClient = new Client();
-        myClient.queue();
+        myClient.renderQueue();
 
     }
 
@@ -71,7 +71,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         this.outputStream.flush(); //Necessary to avoid 'chicken or egg' situation
         this.inputStream = new ObjectInputStream(volitionSocket.getInputStream());
         addKeyListener(this);
-        queue();
+        renderQueue();
     }
 
     public void guiInit(){
@@ -94,18 +94,18 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         }
     }
 
-    private void queue() throws InterruptedException {
-            renderQueue();
-    }
-
     public void getServerUpdate(Update u){
         //Called by ServerListener, not intended for other use.
-        synchronized (latest) {
-            this.latest = u;
+        if(!(u.isGameOver())) {
+            synchronized (latest) {
+                this.latest = u;
+            }
+            this.repaint();
+            this.revalidate();
         }
-        //System.out.println("New Position: [" + u.getPlayer().currentPosition.getX() + "," + u.getPlayer().currentPosition.getY() + "]");
-        this.repaint();
-        this.revalidate();
+        else{
+            //TODO: Display u.winningPlayer + u.winningPlayerKills here.
+        }
     }
 
     public void loseConnection() throws InterruptedException {
@@ -162,12 +162,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     }
 
     public void keyPressed(KeyEvent event) { //https://docs.oracle.com/javase/tutorial/uiswing/events/keylistener.html
-        if(latest.getEntities() == null){
-            try {
-                queue();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        if(latest.getEntities() == null) {
+            renderQueue();
         }
         else {
 

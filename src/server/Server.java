@@ -65,9 +65,16 @@ public class Server implements Runnable{
             if(gameEnded) run = false;
         }
         for(ServerListener s : listeners) s.endGame();
-        if(myGame.players.size() > 0)
+        updateAllClientListeners(new Update(true, myGame.players.get(0).myInfo.getName(), myGame.players.get(0).numberOfKills));
+        if(myGame.players.size() > 0) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             updateScoreBoard();
             JOptionPane.showMessageDialog(null, myGame.players.get(0).myInfo.getName() + " won the game with " + myGame.players.get(0).numberOfKills + " kills.");
+        }
     }
 
     public void updateAllClientListeners(Update u){

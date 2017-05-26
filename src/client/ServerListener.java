@@ -35,6 +35,13 @@ public class ServerListener implements Runnable {
                     receivedFirstUpdate = true;
                     runner.add(runner.arenaDisplay);
                 }
+                if(toNotify.isGameOver()){
+                    try{
+                        socket.close();
+                    } catch(IOException e){
+                        e.printStackTrace();
+                    }
+                }
                 runner.getServerUpdate(toNotify);
             } catch(SocketException e){
                 System.err.println("Lost connection to server.");

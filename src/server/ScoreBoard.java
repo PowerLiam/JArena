@@ -51,7 +51,7 @@ public class ScoreBoard extends JFrame implements ServerListener{
     }
 
     public void updateScoreBoard() {
-        if(Math.abs(System.currentTimeMillis() - lastUpdatedTime) >= 2000) {
+        if(Math.abs(System.currentTimeMillis() - lastUpdatedTime) >= 1000) {
             DefaultTableModel model = new DefaultTableModel(myServer.allClients.size(), 3) {
                 @Override
                 public boolean isCellEditable(int row, int column) {

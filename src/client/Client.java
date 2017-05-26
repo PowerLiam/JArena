@@ -5,11 +5,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
@@ -35,14 +35,14 @@ public class Client extends JFrame implements ActionListener, KeyListener {
     private Update latest;
     private Thread upd;
     private Volition currentVolition;
-    ArenaDisplay myDisp;
-    QueueDisplay myQueueDisp;
+    ArenaDisplay arenaDisplay;
+    QueueDisplay queueDisplay;
     private Entity[][] board = new Entity[Constants.BOARD_VIEW_WINDOW_SIZE][Constants.BOARD_VIEW_WINDOW_SIZE];
 
 
-    Image scaledBulletIcon;
-    Image scaledPlayerIcon;
-    Image scaledEnemyIcon;
+    BufferedImage bullet;
+    BufferedImage player;
+    BufferedImage enemy;
 
     public static void main(String args[]) throws IOException, InterruptedException {
         Client myClient = new Client();
@@ -50,15 +50,11 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     }
 
-    public Client() throws IOException, InterruptedException {
+    public Client() throws IOException, InterruptedException{
         super("Java Battle Arena");
-
-        URL url = this.getClass().getResource("/client/resources/client.png");
-        Image scaledPlayerIcon = ImageIO.read(url).getScaledInstance(40,40, Image.SCALE_DEFAULT);
-
-        scaledBulletIcon = new ImageIcon("bullet.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
-        //scaledPlayerIcon = new ImageIcon("client.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
-        scaledEnemyIcon = new ImageIcon("enemy.png").getImage().getScaledInstance(40, 40, Image.SCALE_FAST);
+        bullet = resizeBufferedImage(ImageIO.read(Client.class.getResourceAsStream("resources/bullet.png")), 40, 40);
+        player = resizeBufferedImage(ImageIO.read(Client.class.getResourceAsStream("resources/client.png")), 40, 40);
+        enemy = resizeBufferedImage(ImageIO.read(Client.class.getResourceAsStream("resources/enemy.png")), 40, 40);
 
         while(userName == null || userName.isEmpty() || userName == "")
             userName = JOptionPane.showInputDialog(null, "Enter a Username:", "Input", JOptionPane.INFORMATION_MESSAGE);
@@ -80,7 +76,7 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     public void guiInit(){
 
-        myDisp = new ArenaDisplay();
+        arenaDisplay = new ArenaDisplay();
 
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         this.setSize(new Dimension(600,600));
@@ -93,10 +89,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
 
     private void updateVolition() throws IOException {
         synchronized (currentVolition) {
-            //Use to update server of a new Volition
             outputStream.reset();
             outputStream.writeObject(currentVolition);
-            System.out.println("Wrote object " + currentVolition.toString());
         }
     }
 
@@ -109,60 +103,52 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         synchronized (latest) {
             this.latest = u;
         }
-        System.out.println("New Position: [" + u.getPlayer().currentPosition.getX() + "," + u.getPlayer().currentPosition.getY() + "]");
+        //System.out.println("New Position: [" + u.getPlayer().currentPosition.getX() + "," + u.getPlayer().currentPosition.getY() + "]");
         this.repaint();
         this.revalidate();
     }
 
     public void loseConnection() throws InterruptedException {
         //Called by ServerListener, not intended for other use.
-        TimeUnit.SECONDS.sleep(5);
+        TimeUnit.SECONDS.sleep(3);
         System.exit(-1);
     }
 
     public void renderQueue(){
-        myQueueDisp = new QueueDisplay();
-        this.add(myQueueDisp);
+        queueDisplay = new QueueDisplay();
+        this.add(queueDisplay);
         this.pack();
     }
 
     public void renderBoard(){
+        board = new Entity[Constants.BOARD_VIEW_WINDOW_SIZE][Constants.BOARD_VIEW_WINDOW_SIZE]; //Last render is now invalid.
         ArrayList<Entity> allEntities = latest.getEntities();
         Player me = latest.getPlayer();
         Position myPos = me.getPosition();
         System.out.println("Position: " + myPos.getX() + "," + myPos.getY());
         Position topLeft = new Position(myPos.getX() - 7, myPos.getY() - 7);
-        Position botRight = new Position(myPos.getX() + 7, myPos.getY() + 7);
+        Position botRight = new Position(myPos.getX() + 8, myPos.getY() + 8);
 
-
-
-        for(Entity cur: allEntities){
-            //System.out.println("OUTSIDE: " + cur.toString());
-            if(cur.getPosition().getX() >= topLeft.getX() && cur.getPosition().getX() <= botRight.getX()){
-                if(cur.getPosition().getY() >= topLeft.getY() && cur.getPosition().getY() <= botRight.getY()){
-                    board[cur.getPosition().getX() - topLeft.getX()][cur.getPosition().getY() - topLeft.getY()] = cur;
-                   // System.out.println("INSIDE: " + cur.toString() + (cur.getPosition().getX() - topLeft.getX()) + "   " + (cur.getPosition().getY() - topLeft.getY()));
+        for(Entity entity: allEntities){
+            if(entity.getPosition().getX() >= topLeft.getX() && entity.getPosition().getX() <= botRight.getX()){
+                if(entity.getPosition().getY() >= topLeft.getY() && entity.getPosition().getY() <= botRight.getY()) {
+                    board[entity.getPosition().getX() - topLeft.getX()][entity.getPosition().getY() - topLeft.getY()] = entity;
                 }
             }
         }
 
-
-
-
-        //Loops through every space that I will render
-        int realx = 0;
-        int realy = 0;
+        int renderedX;
+        int renderedY = 0;
         for(int y = topLeft.getY(); y < botRight.getY(); y++){
-            realx = 0;
+            renderedX = 0;
             for(int x = topLeft.getX(); x < botRight.getX(); x++){
-                if(x < 0 || y < 0){
-                    board[realx][realy] = new Wall();
+                if(x < 0 || y < 0 || x > Constants.BOUNDARY_X || y > Constants.BOUNDARY_Y){
+                    board[renderedX][renderedY] = new Wall();
                 }
-                realx++;
+                renderedX++;
             }
-            realy++;
+            renderedY++;
         }
-        System.out.println();
     }
 
 
@@ -199,10 +185,8 @@ public class Client extends JFrame implements ActionListener, KeyListener {
                 currentVolition.setShootingVolition(true);
             }
             try {
-                System.out.println("Updating volition...");
                 updateVolition();
             } catch (IOException e) {
-                System.err.print("Volition not sent properly");
                 e.printStackTrace();
             }
         }
@@ -251,31 +235,30 @@ public class Client extends JFrame implements ActionListener, KeyListener {
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
             renderBoard();
-
-            int yOffset = 0;
+            int xOffset = 0;
             for(Entity[] row : board){//Each Row
-                int xOffset = 0;
-                for(Entity space : row){ //Each Square
-                    if(space == null){
-                        g.setColor(Color.lightGray);
-                        g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
-                        xOffset += Constants.SQUARE_DIM;
+                int yOffset = 0;
+                for(int i = row.length - 1; i >=0; i--){//Each Square
+                    g.setColor(Color.lightGray);
+                    g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
+                    if(row[i] == null){
+                        yOffset += Constants.SQUARE_DIM;
                         continue;
                     }
-                    if(space.isWall()) {
+                    else if(row[i].isWall()) {
                         g.setColor(Color.DARK_GRAY);
                         g.fillRect(xOffset, yOffset, Constants.SQUARE_DIM, Constants.SQUARE_DIM);
                     }
-                    if(space.equals(latest.getPlayer())){
-                        g.drawImage(scaledPlayerIcon, xOffset, yOffset, null);
-                    } else if(space.isPlayer()){
-                        g.drawImage(scaledEnemyIcon, xOffset, yOffset, null);
+                    else if(row[i].equals(latest.getPlayer())){
+                        g.drawImage(getRotatedImage(row[i], player), xOffset, yOffset, this);
+                    } else if(row[i].isPlayer()){
+                        g.drawImage(getRotatedImage(row[i], enemy), xOffset, yOffset, this);
                     } else {
-                        g.drawImage(scaledBulletIcon, xOffset, yOffset, null);
+                        g.drawImage(getRotatedImage(row[i], bullet), xOffset, yOffset, this);
                     }
-                    xOffset += Constants.SQUARE_DIM;
+                    yOffset += Constants.SQUARE_DIM;
                 }
-                yOffset += Constants.SQUARE_DIM;
+                xOffset += Constants.SQUARE_DIM;
             }
         }
 
@@ -284,4 +267,46 @@ public class Client extends JFrame implements ActionListener, KeyListener {
             return new Dimension(600, 600);
         }
     }
+
+    private BufferedImage getRotatedImage(Entity entity, BufferedImage image){
+        switch(entity.getFacing()){
+            case Constants.FACING_NORTH :{
+                return image;
+            }
+            case Constants.FACING_EAST :{
+                return rotateCw(image);
+            }
+            case Constants.FACING_SOUTH :{
+                return rotateCw(rotateCw(image));
+            }
+            case Constants.FACING_WEST :{
+                return rotateCw(rotateCw(rotateCw(image)));
+            }
+        }
+        return null;
+    }
+
+    public static BufferedImage resizeBufferedImage(BufferedImage img, int newW, int newH) {
+        Image tmp = img.getScaledInstance(newW, newH, Image.SCALE_SMOOTH);
+        BufferedImage dimg = new BufferedImage(newW, newH, BufferedImage.TYPE_INT_ARGB);
+
+        Graphics2D g2d = dimg.createGraphics();
+        g2d.drawImage(tmp, 0, 0, null);
+        g2d.dispose();
+
+        return dimg;
+    }
+
+    public static BufferedImage rotateCw( BufferedImage img )
+    {
+        int width  = img.getWidth();
+        int height = img.getHeight();
+        BufferedImage newImage = new BufferedImage(height, width, img.getType());
+        for(int i = 0; i < width; i++)
+            for(int j = 0; j < height; j++) {
+                newImage.setRGB(height - 1 - j, i, img.getRGB(i, j));
+            }
+        return newImage;
+    }
+
 }

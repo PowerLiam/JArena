@@ -38,14 +38,16 @@ public class ClientListener implements Comparable<ClientListener>{
     }
 
     public void updateVolition(Volition v){ //Updates the SERVER'S copy of the client's sent volition.
-        myPlayer.setVolition(v);
+        synchronized (ParentArena.lock) {
+            myPlayer.setVolition(v);
+        }
     }
 
     public void sendClientUpdate(Update u){
-        synchronized (this) {
+        synchronized (myPlayer) {
             try {
                 u.addPlayer(this.getMyPlayer());
-                System.out.println(clientInformation.getName() + " Sending back : (" + getMyPlayer().currentPosition.getX() + "'" + getMyPlayer().currentPosition.getY() + ")");
+                //System.out.println(clientInformation.getName() + " Sending back : (" + getMyPlayer().currentPosition.getX() + "'" + getMyPlayer().currentPosition.getY() + ")");
                 updateOutputStream.reset();
                 updateOutputStream.writeObject(u);
                 missedUpdateCount = 0;

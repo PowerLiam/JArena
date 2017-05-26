@@ -66,6 +66,7 @@ public class Server implements Runnable{
         }
         for(ServerListener s : listeners) s.endGame();
         if(myGame.players.size() > 0)
+            updateScoreBoard();
             JOptionPane.showMessageDialog(null, myGame.players.get(0).myInfo.getName() + " won the game with " + myGame.players.get(0).numberOfKills + " kills.");
     }
 
@@ -76,8 +77,8 @@ public class Server implements Runnable{
     }
 
     private void assignStartingPosition(Player next){ //For now, starting position is random.
-        next.currentPosition.setX((int) (Math.random() * 201));
-        next.currentPosition.setY((int) (Math.random() * 201));
+        next.currentPosition.setX((int) (Math.random() * (Constants.BOUNDARY_X + 1)));
+        next.currentPosition.setY((int) (Math.random() * (Constants.BOUNDARY_Y + 1)));
     }
 
     public void addListener(ServerListener s){

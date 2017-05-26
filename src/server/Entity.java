@@ -19,7 +19,7 @@ public abstract class Entity implements Serializable{
     protected boolean isWall = false;
     public int id = -1;
 
-    private transient ArrayList<EntityActionListener> listeners = new ArrayList<>();
+    protected transient ArrayList<EntityActionListener> listeners = new ArrayList<>();
 
     public abstract void shoot();
 
@@ -98,35 +98,34 @@ public abstract class Entity implements Serializable{
 
 
     public synchronized boolean fulfillVolition(){
-        System.out.print(this.facing + " Entity is ");
-        if(!alive) throw new IllegalStateException("Dead things have no volition.");
-        //Volition Priority: Face, Move, Shoot. If ever set to multiple, accept in order of priority. (This should never happen)
-        if(this.hasFacingVolition()){
-            this.facing = facingVolition;
-            //Reset back to default
-            this.facingVolition = -1; //This should NEVER be accessed when its value is -1, a check for hasFacingVolition() should precede getter of this value
-            this.hasFacingVolition = false;
-            System.out.println(" changing facing volition.");
-            return true;
+        //System.out.print("Entity is ");
+        if(!alive) this.die();
+        else {
+            //Volition Priority: Face, Move, Shoot. If ever set to multiple, accept in order of priority. (This should never happen)
+            if (this.hasFacingVolition()) {
+                this.facing = facingVolition;
+                //Reset back to default
+                this.facingVolition = -1; //This should NEVER be accessed when its value is -1, a check for hasFacingVolition() should precede getter of this value
+                this.hasFacingVolition = false;
+               // System.out.println("changing facing volition to " + this.facing + ".");
+                return true;
+            } else if (this.hasMovementVolition()) {
+                this.move();
+                //Reset back to default
+                this.hasMovementVolition = false;
+                return true;
+            } else if (this.hasShootingVolition()) {
+                this.shoot();
+                //Reset back to default
+                this.hasShootingVolition = false;
+                //System.out.println("changing shooting volition.");
+                return true;
+            } else {
+                //System.out.println("not changing.");
+                return false;
+            }
         }
-        else if(this.hasMovementVolition()){
-            this.move();
-            //Reset back to default
-            this.hasMovementVolition = false;
-            System.out.println(" changing moving volition.");
-            return true;
-        }
-        else if(this.hasShootingVolition()){
-            this.shoot();
-            //Reset back to default
-            this.hasShootingVolition = false;
-            System.out.println(" changing shooting volition.");
-            return true;
-        }
-        else{
-            System.out.println("not changing.");
-            return false;
-        }
+        return false;
     }
 
     public synchronized void setPosition(Position p){
@@ -154,7 +153,7 @@ public abstract class Entity implements Serializable{
     public synchronized void move() {
         switch(facing){
             case(Constants.FACING_NORTH) :
-                if(currentPosition.getY() + 1 < Constants.BOUNDARY_Y)
+                if(currentPosition.getY() + 1 <= Constants.BOUNDARY_Y)
                     currentPosition.setY(currentPosition.getY() + 1);
                 break;
             case(Constants.FACING_SOUTH) :
@@ -162,7 +161,7 @@ public abstract class Entity implements Serializable{
                     currentPosition.setY( currentPosition.getY() - 1);
                 break;
             case(Constants.FACING_EAST) :
-                if(currentPosition.getX() + 1 < Constants.BOUNDARY_X)
+                if(currentPosition.getX() + 1 <= Constants.BOUNDARY_X)
                     currentPosition.setX(currentPosition.getX() + 1);
                 break;
             case(Constants.FACING_WEST) :
@@ -170,10 +169,10 @@ public abstract class Entity implements Serializable{
                     currentPosition.setX( currentPosition.getX() - 1);
                 break;
         }
-        System.out.println("changing position: " + currentPosition.getX() + "," + currentPosition.getY());
+        //System.out.println("changing position: " + currentPosition.getX() + "," + currentPosition.getY());
     }
 
-    protected synchronized void die(){
+    protected void die(){
         alive = false;
         for(EntityActionListener x : listeners) x.die(this);
     }

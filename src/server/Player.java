@@ -56,32 +56,36 @@ public class Player extends Entity implements KillListener, Serializable{
         switch(facing){
             case(Constants.FACING_NORTH) :
                 if(currentPosition.getY() + 1 < Constants.BOUNDARY_Y) {
-                    bulletPosY = currentPosition.getY() + 1;
+                    bulletPosY = currentPosition.getY();
                     bulletPosX = currentPosition.getX();
                 }
                 break;
             case(Constants.FACING_SOUTH) :
                 if(currentPosition.getY() - 1 >= 0) {
-                    bulletPosY = currentPosition.getY() - 1;
+                    bulletPosY = currentPosition.getY();
                     bulletPosX = currentPosition.getX();
                 }
                 break;
             case(Constants.FACING_EAST) :
                 if(currentPosition.getX() + 1 < Constants.BOUNDARY_X) {
                     bulletPosY = currentPosition.getY();
-                    bulletPosX = currentPosition.getX() + 1;
+                    bulletPosX = currentPosition.getX();
                 }
                 break;
             case(Constants.FACING_WEST) :
                 if(currentPosition.getX() - 1 >= 0) {
                     bulletPosY = currentPosition.getY();
-                    bulletPosX = currentPosition.getX() - 1;
+                    bulletPosX = currentPosition.getX();
                 }
                 break;
         }
-        Position bulletPosition = new Position(bulletPosX, bulletPosY);
-        Bullet toShoot = new Bullet(this, bulletPosition, facing);
-        //Now, we wait for mass destruction!
+        if(!(bulletPosX == 0 || bulletPosY == 0)) {
+            Position bulletPosition = new Position(bulletPosX, bulletPosY);
+            Bullet toShoot = new Bullet(this, bulletPosition, facing);
+            toShoot.addKillListener(this);
+            for (EntityActionListener x : listeners) x.shotBullet(toShoot);
+            //Now, we wait for mass destruction!
+        }
     }
 
     @Override

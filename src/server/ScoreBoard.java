@@ -14,6 +14,7 @@ public class ScoreBoard extends JFrame implements ServerListener{
     JLabel state;
     Server myServer;
     Thread runningServer;
+    double lastUpdatedTime;
 
     public static void main(String[] args) throws IOException {
         new ScoreBoard();
@@ -37,6 +38,7 @@ public class ScoreBoard extends JFrame implements ServerListener{
             myServer.isQueueing = false;
             stateChanger.setText("End Game");
             state.setText("Cycling");
+            lastUpdatedTime = System.currentTimeMillis();
             stateChanger.removeActionListener(stateChanger.getActionListeners()[0]);
             stateChanger.addActionListener(f -> {
                 stateChanger.setText("\\(^-^)/");
@@ -48,33 +50,39 @@ public class ScoreBoard extends JFrame implements ServerListener{
         });
     }
 
-    public void updateScoreBoard(){
-        DefaultTableModel model = new DefaultTableModel(myServer.allClients.size(), 3){
-            @Override
-            public boolean isCellEditable(int row, int column){
-                return false;
-            }
-
-            @Override
-            public String getColumnName(int column){
-                switch(column){
-                    case 0: return "ID";
-                    case 1: return "Player";
-                    case 2: return "Kills";
+    public void updateScoreBoard() {
+        if(Math.abs(System.currentTimeMillis() - lastUpdatedTime) >= 2000) {
+            DefaultTableModel model = new DefaultTableModel(myServer.allClients.size(), 3) {
+                @Override
+                public boolean isCellEditable(int row, int column) {
+                    return false;
                 }
-                return null;
+
+                @Override
+                public String getColumnName(int column) {
+                    switch (column) {
+                        case 0:
+                            return "ID";
+                        case 1:
+                            return "Player";
+                        case 2:
+                            return "Kills";
+                    }
+                    return null;
+                }
+            };
+            leaderBoard.setModel(model);
+            Object[][] data = new Object[myServer.allClients.size()][2];
+            Collections.sort(myServer.allClients);
+            for (int i = 0; i < myServer.allClients.size(); i++) {
+                if (myServer.allClients.get(i).getMyPlayer().alive)
+                    leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id, i, 0);
+                else
+                    leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id + "   (Dead)", i, 0);
+                leaderBoard.setValueAt(myServer.allClients.get(i).clientInformation.getName(), i, 1);
+                leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().numberOfKills, i, 2);
             }
-        };
-        leaderBoard.setModel(model);
-        Object[][] data = new Object[myServer.allClients.size()][2];
-        Collections.sort(myServer.allClients);
-        for(int i = 0; i < myServer.allClients.size(); i++){
-            if(myServer.allClients.get(i).getMyPlayer().alive)
-                leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id, i, 0);
-            else
-                leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().id + "   (Dead)", i, 0);
-            leaderBoard.setValueAt(myServer.allClients.get(i).clientInformation.getName(), i, 1);
-            leaderBoard.setValueAt(myServer.allClients.get(i).getMyPlayer().numberOfKills, i, 2);
+            lastUpdatedTime = System.currentTimeMillis();
         }
     }
 

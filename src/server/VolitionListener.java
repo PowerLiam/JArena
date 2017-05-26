@@ -37,7 +37,7 @@ public class VolitionListener implements Runnable{
         while(run){
             try {
                 Volition toNotify = (Volition) inputStream.readObject();
-                System.out.println(toNotify.toString());
+                //System.out.println(toNotify.toString());
                 runner.updateVolition(toNotify);
             } catch (SocketException e){
                 System.err.println("Lost connection to " + clientInformation.getName());

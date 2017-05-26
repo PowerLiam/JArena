@@ -33,7 +33,7 @@ public class ServerListener implements Runnable {
                 if(!receivedFirstUpdate) {
                     runner.getContentPane().removeAll();
                     receivedFirstUpdate = true;
-                    runner.add(runner.myDisp);
+                    runner.add(runner.arenaDisplay);
                 }
                 runner.getServerUpdate(toNotify);
             } catch(SocketException e){

@@ -16,45 +16,48 @@ public class Arena implements EntityActionListener, Serializable{
     Server running;
     static int id = 0;
 
+    final Object lock = new Object();
+
 
     public Arena(String title, Server running) {
         this.running = running;
         this.title = title;
     }
 
-    public void add(Entity entity, Position position) { //Adds something new to the map, use to initialize locations of players or to add bullets
-        entity.addActionListener(this);
-        entities.add(entity);
-        entity.setPosition(position);
-        if(entity.isPlayer) {
-            players.add((Player)entity);
-            totalPlayers++;
-            livingPlayers++;
-        }
-    }
-
     public void add(Entity entity){
-        entity.addActionListener(this);
-        entities.add(entity);
-        if(entity.isPlayer) {
-            players.add((Player)entity);
-            totalPlayers++;
-            livingPlayers++;
+        synchronized (lock) {
+            entity.addActionListener(this);
+            entities.add(entity);
+            if (entity.isPlayer) {
+                players.add((Player) entity);
+                totalPlayers++;
+                livingPlayers++;
+            } else if (entity.isWall()) {
+                //TODO: See if this is necessary
+            } else {
+                bullets.add((Bullet) entity);
+            }
         }
     }
 
 
     public boolean cycle() { //Returning true signals that the game is over
         double sysNanoTimeStart = System.currentTimeMillis();
-        for(Entity e : entities){
-            e.fulfillVolition();
+        synchronized (lock) {
+               // for (Entity e : entities) {
+                //    e.fulfillVolition();
+               // }
+            for(int i = 0; i < entities.size(); i++){
+                //System.out.println("Fulfilling volition of " + i + ", " + entities.get(i).toString());
+                entities.get(i).fulfillVolition();
+            }
+                validateEntities();
+                refreshSendables();
         }
-        validateEntities();
-        refreshSendables();
         double sysNanoTimeEnd = System.currentTimeMillis();
-        if(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 500){
+        if(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 50){
             try {
-                Thread.sleep( 500 - (int)(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
+                Thread.sleep( 50 - (int)(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
             } catch (InterruptedException e) {
                 System.err.println("done waiting");
             }
@@ -157,9 +160,24 @@ public class Arena implements EntityActionListener, Serializable{
 
     @Override
     public void die(Entity toMourn) {
-        entities.remove(toMourn);
-        if(toMourn.isPlayer) players.remove(toMourn);
-        if(!toMourn.isPlayer) bullets.remove(toMourn);
-        //TODO: Update the ScoreBoard with the player's final statistics, and death
+        synchronized (lock) {
+            entities.remove(toMourn);
+            if (toMourn.isPlayer) {
+                players.remove(toMourn);
+            }
+            if (!toMourn.isPlayer) {
+                bullets.remove(toMourn);
+            }
+        }
+
+    }
+
+    @Override
+    public void shotBullet(Bullet b) {
+        synchronized (lock){
+            b.addActionListener(this);
+            entities.add(b);
+            bullets.add(b);
+        }
     }
 }

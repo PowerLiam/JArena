@@ -59,9 +59,9 @@ public class Bullet extends Entity implements KillListener, Serializable{
     public void move(){ //Causes bullets to die when they reach the edge of the Arena
         super.move();
         if((currentPosition.getX() == Constants.BOUNDARY_X && this.getFacing() == Constants.FACING_EAST)
-                || (currentPosition.getY() == Constants.BOUNDARY_Y  && this.getFacing() == Constants.FACING_SOUTH)
+                || (currentPosition.getY() == Constants.BOUNDARY_Y  && this.getFacing() == Constants.FACING_NORTH)
                 || (currentPosition.getX() == 0 && this.getFacing() == Constants.FACING_WEST)
-                || (currentPosition.getY() == 0 && this.getFacing() == Constants.FACING_NORTH)){
+                || (currentPosition.getY() == 0 && this.getFacing() == Constants.FACING_SOUTH)){
             die();
         }
     }

@@ -17,7 +17,7 @@ public class VolitionListener implements Runnable{
     private ClientListener runner;
     private boolean run;
 
-    public VolitionListener(ClientListener runner,Socket socket, ClientInformation clientInformation){
+    public VolitionListener(ClientListener runner, Socket socket, ClientInformation clientInformation){
         this.runner = runner;
         this.clientInformation = clientInformation;
         try {

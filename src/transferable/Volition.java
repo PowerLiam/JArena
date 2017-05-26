@@ -2,7 +2,7 @@ package transferable;
 
 import java.io.Serializable;
 
-public class Volition implements Serializable{
+public class Volition implements Serializable {
     private boolean hasMovementVolition;
     private boolean hasFacingVolition;
     private boolean hasShootingVolition;
@@ -55,7 +55,7 @@ public class Volition implements Serializable{
     }
 
     @Override
-    public synchronized String toString(){
+    public synchronized String toString() {
         return "V[ " + this.getFacingVolition() + " Move: " + this.isMovementVolition() + " Face: " + this.isFacingVolition() + " Shoot: " + this.isShootingVolition() + "]";
     }
 }

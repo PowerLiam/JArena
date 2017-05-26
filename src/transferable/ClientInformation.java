@@ -1,9 +1,10 @@
 package transferable;
-import global.*;
+
+import global.Position;
 
 import java.io.Serializable;
 
-public class ClientInformation implements Serializable{
+public class ClientInformation implements Serializable {
     private String name;
     private Position startingPosition;
     private boolean isSpectator;

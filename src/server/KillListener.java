@@ -1,5 +1,5 @@
 package server;
 
-public interface KillListener{
+public interface KillListener {
     void kill();
 }

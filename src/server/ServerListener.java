@@ -9,5 +9,6 @@ package server;
  */
 public interface ServerListener {
     public void updateScoreBoard();
+
     public void endGame();
 }

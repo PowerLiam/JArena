@@ -1,8 +1,9 @@
 package server;
 
-public interface EntityActionListener{
+public interface EntityActionListener {
 
     void die(Entity toMourn);
+
     void shotBullet(Bullet b);
 
 }

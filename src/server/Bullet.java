@@ -1,11 +1,12 @@
 package server;
+
 import global.Constants;
 import global.Position;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Bullet extends Entity implements KillListener, Serializable{
+public class Bullet extends Entity implements KillListener, Serializable {
     private Player firedBy;
     private ArrayList<KillListener> killListeners = new ArrayList<>();
     private boolean willDieNextCycle = false;
@@ -52,28 +53,27 @@ public class Bullet extends Entity implements KillListener, Serializable{
         this.isPlayer = false;
     }
 
-    public void addKillListener(KillListener listener){
+    public void addKillListener(KillListener listener) {
         killListeners.add(listener);
     }
 
     @Override
-    public void move(){ //Causes bullets to die when they reach the edge of the Arena
+    public void move() { //Causes bullets to die when they reach the edge of the Arena
         super.move();
-        if((currentPosition.getX() == Constants.BOUNDARY_X && this.getFacing() == Constants.FACING_EAST)
-                || (currentPosition.getY() == Constants.BOUNDARY_Y  && this.getFacing() == Constants.FACING_NORTH)
+        if ((currentPosition.getX() == Constants.BOUNDARY_X && this.getFacing() == Constants.FACING_EAST)
+                || (currentPosition.getY() == Constants.BOUNDARY_Y && this.getFacing() == Constants.FACING_NORTH)
                 || (currentPosition.getX() == 0 && this.getFacing() == Constants.FACING_WEST)
-                || (currentPosition.getY() == 0 && this.getFacing() == Constants.FACING_SOUTH)){
-            if(willDieNextCycle) {
+                || (currentPosition.getY() == 0 && this.getFacing() == Constants.FACING_SOUTH)) {
+            if (willDieNextCycle) {
                 die();
-            }
-            else willDieNextCycle = true;
+            } else willDieNextCycle = true;
         }
     }
 
     @Override
     public void kill() {
         //I've killed an opponent! Let's tell my player.
-        for(KillListener x : killListeners)x.kill();
+        for (KillListener x : killListeners) x.kill();
     }
 
     @Override
@@ -82,17 +82,17 @@ public class Bullet extends Entity implements KillListener, Serializable{
     }
 
     @Override
-    public boolean hasMovementVolition(){
+    public boolean hasMovementVolition() {
         return true; //Bullets don't wait for anyone!
     }
 
     @Override
-    public boolean hasShootingVolition(){
+    public boolean hasShootingVolition() {
         return false; //Avoid breaking the universe
     }
 
     @Override
-    public boolean hasFacingVolition(){
+    public boolean hasFacingVolition() {
         return false; //Bullets are not conscious (yet).
     }
 }

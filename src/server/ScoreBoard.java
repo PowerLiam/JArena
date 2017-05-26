@@ -6,7 +6,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.Collections;
 
-public class ScoreBoard extends JFrame implements ServerListener{
+public class ScoreBoard extends JFrame implements ServerListener {
     JPanel monitor;
     JButton stateChanger;
     JScrollPane scrollPane;
@@ -16,15 +16,11 @@ public class ScoreBoard extends JFrame implements ServerListener{
     Thread runningServer;
     double lastUpdatedTime;
 
-    public static void main(String[] args) throws IOException {
-        new ScoreBoard();
-    }
-
     public ScoreBoard() throws IOException {
         super("Server LeaderBoard");
         setContentPane(monitor);
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        setSize(new Dimension(700,500));
+        setSize(new Dimension(700, 500));
         setVisible(true);
         state.setText("Initializing");
 
@@ -48,6 +44,10 @@ public class ScoreBoard extends JFrame implements ServerListener{
                 stateChanger.addActionListener(g -> System.exit(0));
             });
         });
+    }
+
+    public static void main(String[] args) throws IOException {
+        new ScoreBoard();
     }
 
     public void updateScoreBoard() {

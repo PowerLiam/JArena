@@ -1,21 +1,22 @@
 package server;
 
+import transferable.ClientInformation;
+import transferable.ServerInformation;
+import transferable.Update;
+import transferable.Volition;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import global.Position;
-import transferable.*;
-
-public class ClientListener implements Comparable<ClientListener>{
+public class ClientListener implements Comparable<ClientListener> {
+    public ClientInformation clientInformation;
     private ObjectOutputStream updateOutput;
     private ObjectInputStream updateInput;
-
     private String name;
     private ObjectInputStream updateInputStream;
     private ObjectOutputStream updateOutputStream;
-    public ClientInformation clientInformation;
     private Player myPlayer;
     private Thread vol;
     private Arena ParentArena;
@@ -37,7 +38,7 @@ public class ClientListener implements Comparable<ClientListener>{
         vol.start();
     }
 
-    public void updateVolition(Volition v){ //Updates the SERVER'S copy of the client's sent volition.
+    public void updateVolition(Volition v) { //Updates the SERVER'S copy of the client's sent volition.
         synchronized (ParentArena.lock) {
             myPlayer.setVolition(v);
         }
@@ -47,7 +48,7 @@ public class ClientListener implements Comparable<ClientListener>{
         updateOutputStream.writeObject(s);
     }
 
-    public void sendClientUpdate(Update u){
+    public void sendClientUpdate(Update u) {
         synchronized (myPlayer) {
             try {
                 u.addPlayer(this.getMyPlayer());
@@ -67,14 +68,14 @@ public class ClientListener implements Comparable<ClientListener>{
         }
     }
 
-    public synchronized Player getMyPlayer(){
+    public synchronized Player getMyPlayer() {
         return myPlayer;
     }
 
     @Override
     public int compareTo(ClientListener other) {
-        if(this.getMyPlayer().numberOfKills < other.getMyPlayer().numberOfKills) return 1;
-        else if(this.getMyPlayer().numberOfKills > other.getMyPlayer().numberOfKills) return -1;
+        if (this.getMyPlayer().numberOfKills < other.getMyPlayer().numberOfKills) return 1;
+        else if (this.getMyPlayer().numberOfKills > other.getMyPlayer().numberOfKills) return -1;
         else return 0;
     }
 }

@@ -1,31 +1,35 @@
 package transferable;
+
 import server.Entity;
 import server.Player;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Update implements Serializable{
+public class Update implements Serializable {
     private ArrayList<Entity> entities;
     private Player player;
     private boolean gameOver;
     private String winningPlayer;
     private int winningPlayerKills;
 
-    public Update(ArrayList<Entity> entities){
+    public Update(ArrayList<Entity> entities) {
         this.entities = entities;
     }
 
-    public Update(boolean gameOver, String winningPlayer, int winningPlayerKills){
+    public Update(boolean gameOver, String winningPlayer, int winningPlayerKills) {
         this.gameOver = gameOver;
         this.winningPlayer = winningPlayer;
         this.winningPlayerKills = winningPlayerKills;
     }
 
-    public void addPlayer(Player player){
+    public void addPlayer(Player player) {
         this.player = player;
     }
-    public Player getPlayer(){ return player; }
+
+    public Player getPlayer() {
+        return player;
+    }
 
     public boolean isGameOver() {
         return gameOver;
@@ -51,7 +55,7 @@ public class Update implements Serializable{
         this.winningPlayerKills = winningPlayerKills;
     }
 
-    public ArrayList<Entity> getEntities(){
+    public ArrayList<Entity> getEntities() {
         return entities;
     }
 }

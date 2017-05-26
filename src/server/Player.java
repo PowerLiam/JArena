@@ -1,11 +1,12 @@
 package server;
+
 import global.Constants;
 import global.Position;
 import transferable.ClientInformation;
 
 import java.io.Serializable;
 
-public class Player extends Entity implements KillListener, Serializable{
+public class Player extends Entity implements KillListener, Serializable {
     public int numberOfKills = 0;
     ClientInformation myInfo;
 
@@ -50,36 +51,36 @@ public class Player extends Entity implements KillListener, Serializable{
     }
 
     @Override
-    public void shoot(){
+    public void shoot() {
         int bulletPosX = -1;
         int bulletPosY = -1;
-        switch(facing){
-            case(Constants.FACING_NORTH) :
-                if(currentPosition.getY() + 1 < Constants.BOUNDARY_Y) {
+        switch (facing) {
+            case (Constants.FACING_NORTH):
+                if (currentPosition.getY() + 1 < Constants.BOUNDARY_Y) {
                     bulletPosY = currentPosition.getY();
                     bulletPosX = currentPosition.getX();
                 }
                 break;
-            case(Constants.FACING_SOUTH) :
-                if(currentPosition.getY() - 1 >= 0) {
+            case (Constants.FACING_SOUTH):
+                if (currentPosition.getY() - 1 >= 0) {
                     bulletPosY = currentPosition.getY();
                     bulletPosX = currentPosition.getX();
                 }
                 break;
-            case(Constants.FACING_EAST) :
-                if(currentPosition.getX() + 1 < Constants.BOUNDARY_X) {
+            case (Constants.FACING_EAST):
+                if (currentPosition.getX() + 1 < Constants.BOUNDARY_X) {
                     bulletPosY = currentPosition.getY();
                     bulletPosX = currentPosition.getX();
                 }
                 break;
-            case(Constants.FACING_WEST) :
-                if(currentPosition.getX() - 1 >= 0) {
+            case (Constants.FACING_WEST):
+                if (currentPosition.getX() - 1 >= 0) {
                     bulletPosY = currentPosition.getY();
                     bulletPosX = currentPosition.getX();
                 }
                 break;
         }
-        if(!(bulletPosX == -1 || bulletPosY == -1)) {
+        if (!(bulletPosX == -1 || bulletPosY == -1)) {
             Position bulletPosition = new Position(bulletPosX, bulletPosY);
             Bullet toShoot = new Bullet(this, bulletPosition, facing);
             toShoot.addKillListener(this);

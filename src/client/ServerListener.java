@@ -1,7 +1,9 @@
 package client;
+
 import transferable.ClientInformation;
 import transferable.ServerInformation;
 import transferable.Update;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -31,29 +33,29 @@ public class ServerListener implements Runnable, Serializable {
     @Override
     public void run() {
         try {
-            runner.getServerInformation((ServerInformation)inputStream.readObject());
+            runner.getServerInformation((ServerInformation) inputStream.readObject());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
-        while(true){
+        while (true) {
             try {
                 Update toNotify = (Update) inputStream.readObject();
-                if(!receivedFirstUpdate) {
+                if (!receivedFirstUpdate) {
                     runner.getContentPane().removeAll();
                     receivedFirstUpdate = true;
                     runner.add(runner.arenaDisplay);
                 }
-                if(toNotify.isGameOver()){
-                    try{
+                if (toNotify.isGameOver()) {
+                    try {
                         socket.close();
-                    } catch(IOException e){
+                    } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 runner.getServerUpdate(toNotify);
-            } catch(SocketException e){
+            } catch (SocketException e) {
                 System.err.println("Lost connection to server.");
                 try {
                     socket.close();
@@ -66,8 +68,7 @@ public class ServerListener implements Runnable, Serializable {
                     //This will never happen
                 }
                 break;
-            }
-            catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

@@ -1,22 +1,22 @@
 package server;
-import global.*;
+
+import global.Position;
 import transferable.Update;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Arena implements EntityActionListener, Serializable{
+public class Arena implements EntityActionListener, Serializable {
+    static int id = 0;
+    final Object lock = new Object();
     public String title = "Java Battle Arena";
+    public int totalPlayers = 0;
     protected ArrayList<Entity> entities = new ArrayList<>(); //Maintained to inform client renders
     protected ArrayList<Player> players = new ArrayList<>(); //Maintained to inform scoreboard
     protected ArrayList<Bullet> bullets = new ArrayList<>(); //Maintained to inform scoreboard
-    Update sendToClients;
-    public int totalPlayers = 0;
     protected int livingPlayers = 0;
+    Update sendToClients;
     Server running;
-    static int id = 0;
-
-    final Object lock = new Object();
 
 
     public Arena(String title, Server running) {
@@ -24,7 +24,7 @@ public class Arena implements EntityActionListener, Serializable{
         this.title = title;
     }
 
-    public void add(Entity entity){
+    public void add(Entity entity) {
         synchronized (lock) {
             entity.addActionListener(this);
             entities.add(entity);
@@ -44,94 +44,94 @@ public class Arena implements EntityActionListener, Serializable{
     public boolean cycle() { //Returning true signals that the game is over
         double sysNanoTimeStart = System.currentTimeMillis();
         synchronized (lock) {
-               // for (Entity e : entities) {
-                //    e.fulfillVolition();
-               // }
-            for(int i = 0; i < entities.size(); i++){
+            // for (Entity e : entities) {
+            //    e.fulfillVolition();
+            // }
+            for (int i = 0; i < entities.size(); i++) {
                 //System.out.println("Fulfilling volition of " + i + ", " + entities.get(i).toString());
                 entities.get(i).fulfillVolition();
             }
-                validateEntities();
-                refreshSendables();
+            validateEntities();
+            refreshSendables();
         }
         double sysNanoTimeEnd = System.currentTimeMillis();
-        if(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 100){
+        if (Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000 < 100) {
             try {
-                Thread.sleep( 100 - (int)(Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
+                Thread.sleep(100 - (int) (Math.abs(sysNanoTimeEnd - sysNanoTimeStart) / 1000000));
             } catch (InterruptedException e) {
                 System.err.println("done waiting");
             }
         }
         running.updateAllClientListeners(sendToClients);
-        if(players.size() == 1){
+        if (players.size() == 1) {
             return true;
         }
         return false;
     }
 
-    public void refreshSendables(){
+    public void refreshSendables() {
         sendToClients = new Update(entities);
     }
 
-    public int getId(){
+    public int getId() {
         id++;
         return id;
 
     }
 
-    public void validateEntities(){ //To be called after all entities have fulfilled volition
+    public void validateEntities() { //To be called after all entities have fulfilled volition
         //Evaluates all damage
         ArrayList<Player> playersToTakeDamage = new ArrayList<>();
         ArrayList<Bullet> bulletsToTakeDamage = new ArrayList<>();
         ArrayList<Player> killTracking;
-        for(Bullet b : bullets){
+        for (Bullet b : bullets) {
             killTracking = new ArrayList<>();
             boolean gotAHit = false;
-            for(Player p : players){
-                if(b.getPosition().equals(p.getPosition())){
+            for (Player p : players) {
+                if (b.getPosition().equals(p.getPosition())) {
                     gotAHit = true;
                     playersToTakeDamage.add(p);
                     killTracking.add(p);
                 }
             }
-            if(gotAHit){
+            if (gotAHit) {
                 bulletsToTakeDamage.add(b);
-                for(Player p : killTracking){
-                    if(p.getHealth() == 1) b.kill();
+                for (Player p : killTracking) {
+                    if (p.getHealth() == 1) b.kill();
                 }
             }
         }
 
-        for(Player toHurt : playersToTakeDamage){
+        for (Player toHurt : playersToTakeDamage) {
             toHurt.takeDamage();
         }
-        for(Bullet toHurt: bulletsToTakeDamage){
+        for (Bullet toHurt : bulletsToTakeDamage) {
             toHurt.takeDamage();
         }
 
         //Damage has been evaluated, let's resolve multiple entities in the same position
-        while(!playersAreValidated()) {
+        while (!playersAreValidated()) {
             ArrayList<Position> playerPositions = new ArrayList<>();
             for (Player p : players) {
                 if (!playerPositions.contains(p.getPosition())) {
                     playerPositions.add(p.getPosition());
                 }
             }
-            for(Position pos : playerPositions){
+            for (Position pos : playerPositions) {
                 int pcount = 0;
-                ArrayList <Player> inCurSquare = new ArrayList<Player>();
-                for(Player p : players){
-                    if(p.getPosition().equals(pos)){
+                ArrayList<Player> inCurSquare = new ArrayList<Player>();
+                for (Player p : players) {
+                    if (p.getPosition().equals(pos)) {
                         inCurSquare.add(p);
                         pcount++;
                     }
                 }
-                if(pcount > 1) {
+                if (pcount > 1) {
                     //This checks if there was more than one entity in that position
-                    if(inCurSquare.get(0).getFacing() == inCurSquare.get(1).getFacing()){
+                    if (inCurSquare.get(0).getFacing() == inCurSquare.get(1).getFacing()) {
                         inCurSquare.get(0).aboutFace();
                     }
-                    for(Player p : inCurSquare){  //Bounce the players
+                    for (Player p : inCurSquare) {  //Bounce the players
                         p.aboutFace();
                         p.move();
                         p.aboutFace();
@@ -141,21 +141,21 @@ public class Arena implements EntityActionListener, Serializable{
         }
     }
 
-    public boolean playersAreValidated(){
+    public boolean playersAreValidated() {
         ArrayList<Position> playerPositions = new ArrayList<>();
-        for(Player p : players){
-            if(!playerPositions.contains(p.getPosition())){
+        for (Player p : players) {
+            if (!playerPositions.contains(p.getPosition())) {
                 playerPositions.add(p.getPosition());
             }
         }
-        for(Position pos : playerPositions){
+        for (Position pos : playerPositions) {
             int pcount = 0;
-            for(Player p : players){
-                if(p.getPosition().equals(pos)){
+            for (Player p : players) {
+                if (p.getPosition().equals(pos)) {
                     pcount++;
                 }
             }
-            if(pcount > 1) {
+            if (pcount > 1) {
                 return false;
             }
         }
@@ -178,7 +178,7 @@ public class Arena implements EntityActionListener, Serializable{
 
     @Override
     public void shotBullet(Bullet b) {
-        synchronized (lock){
+        synchronized (lock) {
             b.addActionListener(this);
             entities.add(b);
             bullets.add(b);

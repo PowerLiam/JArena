@@ -5,9 +5,9 @@ package server;
  */
 public class Wall extends Entity {
 
-    public Wall(){
-       isWall = true;
-       isPlayer = false;
+    public Wall() {
+        isWall = true;
+        isPlayer = false;
     }
 
 

@@ -1,4 +1,5 @@
 package server;
+
 import global.Constants;
 import transferable.ClientInformation;
 import transferable.ServerInformation;
@@ -13,18 +14,17 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
-public class Server implements Runnable{
+public class Server implements Runnable {
+    public boolean isQueueing;
+    public boolean run = true;
+    public ArrayList<ClientListener> allClients = new ArrayList<>();
     Arena myGame;
     int spacePerPlayer = 25;
+    Socket updater;
     private ServerSocket update, volition;
     private int updatePort = Constants.UPDATE_PORT;
     private int volitionPort = Constants.VOLITION_PORT;
-    public boolean isQueueing;
-    public boolean run = true;
-    Socket updater;
     private ArrayList<ServerListener> listeners = new ArrayList<>();
-
-    public ArrayList<ClientListener> allClients = new ArrayList<>();
 
     public Server() throws IOException {
         myGame = new Arena("Java Battle Arena", this);
@@ -36,10 +36,10 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
-        while(isQueueing){
-            try{
+        while (isQueueing) {
+            try {
                 updater = update.accept();
-                if(updater != null) {
+                if (updater != null) {
                     ObjectInputStream pendingInputStream = new ObjectInputStream(updater.getInputStream());
                     ObjectOutputStream pendingOutputStream = new ObjectOutputStream(updater.getOutputStream());
                     pendingOutputStream.flush();
@@ -56,16 +56,15 @@ public class Server implements Runnable{
                     updateScoreBoard();
                 }
 
-            } catch(SocketTimeoutException e){
+            } catch (SocketTimeoutException e) {
                 //Expected exception, discard.
-            }
-            catch (IOException | ClassNotFoundException e) {
+            } catch (IOException | ClassNotFoundException e) {
                 System.err.println(e.getMessage());
                 e.printStackTrace();
             }
         }
 
-        for(ClientListener cur : allClients){
+        for (ClientListener cur : allClients) {
             assignStartingPosition(cur.getMyPlayer());
             try {
                 cur.sendServerInfo(new ServerInformation(Constants.BOUNDARY_X, Constants.BOUNDARY_Y));
@@ -75,13 +74,13 @@ public class Server implements Runnable{
         }
 
 
-        while(myGame.players.size() > 1 && run){
+        while (myGame.players.size() > 1 && run) {
             boolean gameEnded = myGame.cycle();
             updateScoreBoard();
-            if(gameEnded) run = false;
+            if (gameEnded) run = false;
         }
-        for(ServerListener s : listeners) s.endGame();
-        if(myGame.players.size() == 0){
+        for (ServerListener s : listeners) s.endGame();
+        if (myGame.players.size() == 0) {
             updateAllClientListeners(new Update(true, "Nobody", 0));
             try {
                 Thread.sleep(1000);
@@ -92,7 +91,7 @@ public class Server implements Runnable{
             JOptionPane.showMessageDialog(null, "The game ended in a tie.");
         }
         updateAllClientListeners(new Update(true, myGame.players.get(0).myInfo.getName(), myGame.players.get(0).numberOfKills));
-        if(myGame.players.size() > 0) {
+        if (myGame.players.size() > 0) {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
@@ -103,23 +102,23 @@ public class Server implements Runnable{
         }
     }
 
-    public void updateAllClientListeners(Update u){
-        for(ClientListener listener : allClients){
+    public void updateAllClientListeners(Update u) {
+        for (ClientListener listener : allClients) {
             listener.sendClientUpdate(u);
         }
     }
 
-    private void assignStartingPosition(Player next){ //For now, starting position is random.
+    private void assignStartingPosition(Player next) { //For now, starting position is random.
         next.currentPosition.setX((int) (Math.random() * (Constants.BOUNDARY_X + 1)));
         next.currentPosition.setY((int) (Math.random() * (Constants.BOUNDARY_Y + 1)));
     }
 
-    public void addListener(ServerListener s){
+    public void addListener(ServerListener s) {
         listeners.add(s);
     }
 
-    private void updateScoreBoard(){
-        for(ServerListener s : listeners){
+    private void updateScoreBoard() {
+        for (ServerListener s : listeners) {
             s.updateScoreBoard();
         }
     }
